@@ -104,6 +104,7 @@ CORE OPERATING RULES:
 - Democratising enterprise-grade negotiating intelligence is the mission`;
 
   // Use provided system prompt if given (for follow-up queries), otherwise use NEGOTIATION_SYSTEM
+  console.log('negotiate.js called — model:', model, 'max_tokens:', max_tokens, 'messages count:', messages?.length, 'system provided:', !!system);
   const systemToUse = system || NEGOTIATION_SYSTEM;
 
   try {
@@ -116,7 +117,7 @@ CORE OPERATING RULES:
       },
       body: JSON.stringify({
         model: model || 'claude-sonnet-4-20250514',
-        max_tokens: max_tokens || 3000,
+        max_tokens: max_tokens || 800,
         system: systemToUse,
         messages
       })
