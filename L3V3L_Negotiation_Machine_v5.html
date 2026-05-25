@@ -368,6 +368,19 @@
     background: rgba(240,192,64,0.03); border: 1px solid rgba(240,192,64,0.1);
     border-radius: 3px; padding: 14px 18px; margin: 10px 0;
   }
+  .brief-content .brief-bullet {
+    padding: 3px 0 3px 20px; position: relative; line-height: 1.6;
+  }
+  .brief-content .brief-bullet::before {
+    content: '·'; position: absolute; left: 6px; color: var(--amber);
+    font-weight: bold;
+  }
+  .brief-content strong {
+    color: var(--white); font-weight: 600;
+  }
+  .brief-content p {
+    margin-bottom: 10px; line-height: 1.75;
+  }
 
   .output-followup {
     margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px;
@@ -543,6 +556,7 @@
 
       <div class="nav-row">
         <button class="btn-primary" id="l1NextBtn">Generate Layer 2 Intake &nbsp;→</button>
+        <button class="btn-secondary" id="l1TestBtn">Load Test Data</button>
         <span class="nav-hint" id="l1hint">6 / 6 required fields</span>
       </div>
     </div>
@@ -705,6 +719,21 @@ document.getElementById('l1NextBtn').addEventListener('click', async function() 
   l1Answers = getL1Answers();
   showScreen('l2loading');
   await generateLayer2();
+});
+
+document.getElementById('l1TestBtn').addEventListener('click', function() {
+  const testData = {
+    l1q1: "Negotiating a three-year software licensing and support renewal with TechCore Systems, our ERP vendor. We are a mid-size manufacturer ($38M revenue). Primary outcome: 20% cost reduction on $180K annual fee plus upgrade from Standard to Premium support.",
+    l1q2: "Ideal: 22% reduction plus Premium support, CPI-capped for three years. Minimum: 15% reduction with Premium support. Walkaway: under 12% with no support upgrade — we have a Meridian ERP quote at 14% lower TCO, though switching costs $120K and 9 months.",
+    l1q3: "Sandra Reyes, Regional Account Director, has handled our account two years. She needed to escalate twice in the last renewal — authority ceiling appears to be around 15%. Final approval sits with VP Sales Jennifer Walsh or CFO. We have never met them.",
+    l1q4: "Our contract expires in 52 days. TechCore's fiscal year ends in 38 days — they must book this renewal before quarter close. Our CFO wants resolution in 30 days. Time pressure favours us — their quarter-close urgency is structural and non-negotiable.",
+    l1q5: "Four-year ongoing relationship. TechCore is our sole ERP provider. Switching costs are real — 9 months and $120K estimated. We represent roughly 6% of Sandra's regional book. They have flagged 'investing in our account' twice. Power balance slightly in our favour due to their fiscal timing.",
+    l1q6: "Three dynamics not captured above: (1) Sandra mentioned TechCore is losing mid-market clients to Meridian — she did not intend this as a signal but it landed as one. (2) Our CFO has a warm personal relationship with Sandra and has asked us not to damage it — a real constraint on aggression. (3) Our IT Director selected TechCore and has a personal stake in the relationship succeeding — he will be in the room and may soften our position instinctively."
+  };
+  Object.entries(testData).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) { el.value = val; el.dispatchEvent(new Event('input')); }
+  });
 });
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -988,7 +1017,7 @@ Generate the ${briefType} now. Be specific to this negotiation throughout.`;
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 800,
+        max_tokens: 1200,
         messages: conversationHistory
       })
     });
@@ -1020,24 +1049,35 @@ Generate the ${briefType} now. Be specific to this negotiation throughout.`;
 // ═══════════════════════════════════════════════════════════════════════
 function renderBrief() {
   const { l1, l2 } = window._completeness;
-  const totalAnswered = l1 + l2;
   let briefTypeLabel = l2 >= 8 ? 'Full Intelligence Brief' : l2 >= 4 ? 'Standard Brief' : 'Emergency Brief';
 
   document.getElementById('outputCompleteness').textContent =
     `Layer 1: ${l1}/6  ·  Layer 2: ${l2}/10  ·  ${briefTypeLabel}`;
 
-  // Format the brief with styled sections
   let html = fullBrief
-    // Section headers
-    .replace(/^## (PHASE \d+ [–\-].+)$/gm, '<h2>$1</h2>')
+    // Phase headers
+    .replace(/^## (PHASE \d+[^\n]+)$/gm, '<h2>$1</h2>')
+    // Sub-headers
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    // RTTR citations
+    // RTTR citations — style inline
     .replace(/\[RTTR-([A-Z0-9\-]+)\s*\|\s*([^\]]+)\]/g,
       '<span class="rttr-cite">[RTTR-$1 | $2]</span>')
+    // Bold text **text** → styled span
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    // Bullet lines starting with - or •
+    .replace(/^[-•]\s+(.+)$/gm, '<div class="brief-bullet">$1</div>')
     // Scenario blocks
-    .replace(/(SCENARIO:.+?)(?=SCENARIO:|$)/gs, '<div class="scenario-block">$1</div>')
-    // Preserve line breaks
+    .replace(/(SCENARIO:[^\n]+(?:\n(?!SCENARIO:|##|###)[^\n]*)*)/g,
+      '<div class="scenario-block">$1</div>')
+    // Double newlines → paragraph breaks
+    .replace(/\n\n/g, '</p><p>')
+    // Single newlines → line breaks
     .replace(/\n/g, '<br>');
+
+  // Wrap in paragraph tag
+  html = '<p>' + html + '</p>';
+  // Clean up empty paragraphs
+  html = html.replace(/<p><\/p>/g, '').replace(/<p>(<h[23]>)/g, '$1').replace(/(<\/h[23]>)<\/p>/g, '$1');
 
   document.getElementById('briefContent').innerHTML = html;
 }
