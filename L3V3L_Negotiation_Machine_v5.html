@@ -988,7 +988,7 @@ Generate the ${briefType} now. Be specific to this negotiation throughout.`;
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
+        max_tokens: 800,
         messages: conversationHistory
       })
     });
@@ -1010,7 +1010,7 @@ Generate the ${briefType} now. Be specific to this negotiation throughout.`;
   } catch(err) {
     clearInterval(statusInterval);
     console.error('Brief generation error:', err);
-    document.getElementById('briefContent').textContent = 'An error occurred generating your brief. Please check your API key and try again.';
+    document.getElementById('briefContent').textContent = 'Error: ' + err.message + ' — Check browser console (F12) for full details.';
     showScreen('output');
   }
 }
