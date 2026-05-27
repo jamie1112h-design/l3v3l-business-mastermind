@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L3V3L — Marketing Machine</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  :root {
+    --gold: #f0c040;
+    --gold-mid: #c8982e;
+    --accent: #1a5c3a;
+    --accent-deep: #0d3320;
+    --accent-dark: #061a0e;
+    --accent-hi: #5aaa7a;
+    --bg: #06060a;
+    --card: #0f0f18;
+    --card-dark: #090912;
+    --border: #252535;
+    --border-act: #1a4a2a;
+    --text: #f0f0fa;
+    --text-mid: #b8b8d0;
+    --text-dim: #7878a0;
+    --text-faint: #555570;
+    --white: #f8f8ff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Crimson Pro', serif; font-size: 17px; line-height: 1.7; }
+
+  .site-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 0.5px solid var(--border); }
+  .logo { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: var(--gold); letter-spacing: 4px; }
+  .suite-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; }
+
+  .hero { text-align: center; padding: 52px 24px 40px; border-bottom: 0.5px solid var(--border); }
+  .machine-name { font-family: 'Inter', sans-serif; font-size: 34px; font-weight: 700; color: var(--accent); margin-bottom: 8px; letter-spacing: -0.5px; }
+  .machine-tagline { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-mid); letter-spacing: 1px; margin-bottom: 20px; }
+  .badge-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .badge { font-family: 'Share Tech Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 4px; }
+  .badge-tier { background: var(--accent-dark); color: var(--accent); border: 0.5px solid var(--border-act); }
+  .badge-intake { background: #0a1a0a; color: #4a9e6a; border: 0.5px solid #2a5a3a; }
+
+  .main { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .progress-wrap { margin-bottom: 36px; }
+  .progress-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+  .progress-bar { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+  .phase-indicator { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--accent-hi); letter-spacing: 1px; margin-bottom: 24px; }
+
+  .q-card { background: var(--card-dark); border: 0.5px solid var(--border); border-radius: 10px; padding: 28px 28px 24px; margin-bottom: 20px; transition: border-color 0.2s; }
+  .q-card:focus-within { border-color: var(--border-act); }
+  .q-number { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-bottom: 10px; }
+  .q-critical { color: var(--gold); }
+  .q-text { font-family: 'Crimson Pro', serif; font-size: 18px; color: var(--white); line-height: 1.5; margin-bottom: 16px; }
+  .q-hint { font-family: 'Crimson Pro', serif; font-size: 14px; color: var(--text-dim); font-style: italic; margin-bottom: 16px; }
+  textarea { width: 100%; background: var(--card); border: 0.5px solid var(--border); border-radius: 6px; color: var(--text); font-family: 'Crimson Pro', serif; font-size: 16px; padding: 12px 14px; resize: vertical; outline: none; transition: border-color 0.2s; min-height: 100px; }
+  textarea:focus { border-color: var(--border-act); }
+
+  .btn-row { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; align-items: center; }
+  .btn-primary { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; background: linear-gradient(135deg, var(--accent-deep), var(--accent)); color: #d0f0e0; border: 1px solid var(--accent); border-radius: 6px; padding: 12px 28px; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary { font-family: 'Share Tech Mono', monospace; font-size: 11px; background: transparent; color: var(--text-dim); border: 0.5px solid var(--border); border-radius: 6px; padding: 12px 18px; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+  .btn-secondary:hover { color: var(--text-mid); border-color: var(--text-dim); }
+
+  .loading-wrap { text-align: center; padding: 60px 24px; }
+  .loading-spinner { width: 36px; height: 36px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-label { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); letter-spacing: 0.5px; }
+  .loading-sub { font-family: 'Crimson Pro', serif; font-size: 15px; color: var(--text-dim); margin-top: 8px; }
+
+  .brief-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; }
+  .brief-title-block .brief-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; margin-bottom: 6px; }
+  .brief-title-block h1 { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 700; color: var(--white); }
+  .brief-meta { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: right; line-height: 2; }
+
+  .brief-body h2 { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 0.5px solid var(--border-act); text-transform: uppercase; }
+  .brief-body h3 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); margin: 28px 0 12px; }
+  .brief-body p { font-family: 'Crimson Pro', serif; font-size: 17px; color: var(--text); line-height: 1.8; margin-bottom: 14px; }
+  .brief-body ul, .brief-body ol { padding-left: 24px; margin-bottom: 14px; }
+  .brief-body li { font-family: 'Crimson Pro', serif; font-size: 17px; color: var(--text); line-height: 1.7; margin-bottom: 6px; }
+  .brief-body strong { color: var(--white); font-weight: 600; }
+  .brief-body em { color: var(--text-mid); }
+
+  .section-divider { border: none; border-top: 0.5px solid var(--border); margin: 32px 0; }
+  .emergency-link { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-faint); text-decoration: none; transition: color 0.2s; }
+  .emergency-link:hover { color: var(--text-dim); }
+  .rttr-author { color: var(--accent-hi); }
+  .rttr-rest { color: #c8c8e0; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  @media (max-width: 600px) {
+    .site-header { padding: 14px 16px; }
+    .hero { padding: 36px 16px 28px; }
+    .main { padding: 28px 16px 60px; }
+    .q-card { padding: 20px 16px 18px; }
+    .brief-header { flex-direction: column; }
+    .brief-meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">L3V3L</div>
+  <div class="suite-label">BUSINESS MASTERMIND</div>
+</header>
+
+<div class="hero">
+  <div class="machine-name">Marketing</div>
+  <div class="machine-tagline">MARKETING INTELLIGENCE BRIEF — TIER 1</div>
+  <div class="badge-row">
+    <span class="badge badge-tier">9 SEED → 12 CUSTOM</span>
+    <span class="badge badge-intake">7 P'S DIAGNOSTIC</span>
+  </div>
+</div>
+
+<main class="main">
+
+  <div id="screen-l1" class="screen active">
+    <div class="progress-wrap">
+      <div class="progress-label"><span>LAYER 1 — MARKETING SITUATION</span><span id="l1-counter">0 / 9</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="l1-bar" style="width:0%"></div></div>
+    </div>
+    <div class="phase-indicator">PHASE 1 OF 3 — 7 P'S CLASSIFICATION</div>
+    <div id="l1-questions"></div>
+    <div class="btn-row">
+      <button class="btn-primary" id="btn-l1-next" onclick="submitL1()" disabled>Generate Deep Analysis Questions →</button>
+      <a href="#" class="emergency-link" onclick="submitEmergency(); return false;">Emergency Brief (Layer 1 only)</a>
+    </div>
+  </div>
+
+  <div id="screen-loading-l2" class="screen">
+    <div class="loading-wrap">
+      <div class="loading-spinner"></div>
+      <div class="loading-label">ANALYSING MARKETING SITUATION</div>
+      <div class="loading-sub">Diagnosing your 7 P's position · Generating custom deep analysis questions…</div>
+    </div>
+  </div>
+
+  <div id="screen-l2" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-label"><span>LAYER 2 — DEEP MARKETING INTELLIGENCE</span><span id="l2-counter">0 / 12</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="l2-bar" style="width:0%"></div></div>
+    </div>
+    <div class="phase-indicator">PHASE 2 OF 3 — ADAPTIVE INTELLIGENCE GATHERING</div>
+    <div id="l2-questions"></div>
+    <div class="btn-row">
+      <button class="btn-primary" id="btn-l2-next" onclick="submitL2()" disabled>Generate Marketing Intelligence Brief →</button>
+    </div>
+  </div>
+
+  <div id="screen-loading-brief" class="screen">
+    <div class="loading-wrap">
+      <div class="loading-spinner"></div>
+      <div class="loading-label">FORMING MARKETING INTELLIGENCE BRIEF</div>
+      <div class="loading-sub">Diagnosing 7 P's · Identifying the marketing resolution imperative · Mapping options…</div>
+    </div>
+  </div>
+
+  <div id="screen-brief" class="screen">
+    <div class="brief-header">
+      <div class="brief-title-block">
+        <div class="brief-label">L3V3L MARKETING INTELLIGENCE BRIEF</div>
+        <h1>Marketing Machine</h1>
+      </div>
+      <div class="brief-meta" id="brief-meta"></div>
+    </div>
+    <div class="brief-body" id="brief-body"></div>
+    <hr class="section-divider">
+    <div class="btn-row">
+      <button class="btn-primary" onclick="resetMachine()">New Brief →</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const EDGE_URL = 'https://wljxufilyobwpbavvwsr.supabase.co/functions/v1/marketing';
+
+const L1_QUESTIONS = [
+  { id: 'l1_1', label: 'Q1 — PRODUCT / SERVICE', critical: false,
+    text: 'Describe what you sell: the core product or service, who it is designed for, what problem it solves, and what makes it different from alternatives in the market.',
+    hint: 'Be specific — the more clearly you define the offer and its differentiation, the more precise the brief.' },
+  { id: 'l1_2', label: 'Q2 — PRICE AND VALUE', critical: false,
+    text: 'How is your product or service priced relative to the market? Describe your pricing model, how you arrived at it, and how customers perceive the value they receive relative to what they pay.',
+    hint: 'Pricing-positioning misalignment is a frequent root cause of stalled acquisition.' },
+  { id: 'l1_3', label: 'Q3 — PROMOTION AND MESSAGING', critical: true,
+    text: 'How do you currently communicate your offer to the market? Describe your main marketing channels, your core message, and what you believe your target customer understands about you before they buy.',
+    hint: 'This is the primary messaging diagnostic. Describe what you actually do, not what you wish you did.' },
+  { id: 'l1_4', label: 'Q4 — PLACE AND DISTRIBUTION', critical: false,
+    text: 'How do customers find, access, and purchase from you? Describe your sales channels, distribution model, and any friction in the path from awareness to purchase.',
+    hint: 'Funnel friction is often where revenue leaks invisibly.' },
+  { id: 'l1_5', label: 'Q5 — PEOPLE AND TEAM', critical: false,
+    text: 'Who delivers your product or service to the customer, and how does the quality of that interaction affect customer perception? Include sales, service, and customer-facing roles.',
+    hint: 'People-experience misalignment is something marketing cannot fix alone — the brief will account for it.' },
+  { id: 'l1_6', label: 'Q6 — PACKAGING AND BRAND', critical: false,
+    text: 'How does your brand present itself visually and verbally — website, materials, naming, tone? How does first impression align with the value you deliver?',
+    hint: 'Brand-offer coherence is often where positioning breaks down before a prospect even engages.' },
+  { id: 'l1_7', label: 'Q7 — PROCESS', critical: false,
+    text: 'Describe the customer experience from first contact through purchase and post-purchase. Where does the experience excel, and where does it create friction or disappointment?',
+    hint: 'Process gaps destroy marketing ROI by failing to convert interest into purchase or repeat.' },
+  { id: 'l1_8', label: 'Q8 — BUDGET AND RESOURCES', critical: false,
+    text: 'What is your current marketing budget (approximate monthly or annual), and what resources — team, tools, time — do you have available to execute marketing activity?',
+    hint: 'All recommendations will be calibrated to your actual budget and resource reality.' },
+  { id: 'l1_9', label: 'Q9 — PRIMARY MARKETING OBJECTIVE', critical: true,
+    text: 'What is the single most important marketing outcome you need to achieve in the next 6–12 months? Describe it in your own terms — what does success look like?',
+    hint: 'Be direct. The more specific your definition of success, the more targeted the brief.' },
+];
+
+let l1Answers = {};
+let l2Questions = [];
+let l2Answers = {};
+
+function buildL1() {
+  const container = document.getElementById('l1-questions');
+  container.innerHTML = '';
+  L1_QUESTIONS.forEach(q => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.innerHTML = `
+      <div class="q-number${q.critical ? ' q-critical' : ''}">${q.label}${q.critical ? ' — CRITICAL' : ''}</div>
+      <div class="q-text">${q.text}</div>
+      ${q.hint ? `<div class="q-hint">${q.hint}</div>` : ''}
+      <textarea id="${q.id}" placeholder="Your answer…" rows="4" oninput="updateL1('${q.id}', this.value)"></textarea>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function updateL1(id, value) {
+  if (value.trim()) { l1Answers[id] = value.trim(); } else { delete l1Answers[id]; }
+  const count = Object.keys(l1Answers).length;
+  document.getElementById('l1-counter').textContent = count + ' / 9';
+  document.getElementById('l1-bar').style.width = (count / 9 * 100) + '%';
+  document.getElementById('btn-l1-next').disabled = count < 9;
+}
+
+function buildL2(questions) {
+  const container = document.getElementById('l2-questions');
+  container.innerHTML = '';
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.innerHTML = `
+      <div class="q-number">Q${i + 1} — DEEP ANALYSIS</div>
+      <div class="q-text">${q.text}</div>
+      <textarea id="l2_${q.id}" placeholder="Your answer…" rows="4" oninput="updateL2('${q.id}', this.value)"></textarea>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function updateL2(id, value) {
+  if (value.trim()) { l2Answers[id] = value.trim(); } else { delete l2Answers[id]; }
+  const count = Object.keys(l2Answers).length;
+  document.getElementById('l2-counter').textContent = count + ' / 12';
+  document.getElementById('l2-bar').style.width = (count / 12 * 100) + '%';
+  document.getElementById('btn-l2-next').disabled = count < 8;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function submitL1() {
+  showScreen('screen-loading-l2');
+  const l1Text = L1_QUESTIONS.map(q => q.label + ':\n' + (l1Answers[q.id] || '(not answered)')).join('\n\n');
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: '[GENERATE_LAYER2]\n\n' + l1Text }], max_tokens: 2000 })
+    });
+    const data = await res.json();
+    const parsed = JSON.parse(data.content[0].text.trim().replace(/```json|```/g, '').trim());
+    l2Questions = parsed.questions;
+    buildL2(l2Questions);
+    showScreen('screen-l2');
+  } catch (err) {
+    alert('Error generating deep analysis questions. Please try again.\n\n' + err.message);
+    showScreen('screen-l1');
+  }
+}
+
+async function submitL2() {
+  showScreen('screen-loading-brief');
+  const l1Text = L1_QUESTIONS.map(q => q.label + ':\n' + (l1Answers[q.id] || '(not answered)')).join('\n\n');
+  const l2Text = l2Questions.map(q => 'DEEP Q' + q.id + ': ' + q.text + '\nAnswer: ' + (l2Answers[q.id] || '(not answered)')).join('\n\n');
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: '[GENERATE_BRIEF]\n\nLAYER 1 — 7 P\'S CLASSIFICATION:\n' + l1Text + '\n\nLAYER 2 — DEEP MARKETING INTELLIGENCE:\n' + l2Text }], max_tokens: 4000 })
+    });
+    const data = await res.json();
+    renderBrief(data.content[0].text, 'Full Intelligence Brief');
+    showScreen('screen-brief');
+  } catch (err) {
+    alert('Error generating brief. Please try again.\n\n' + err.message);
+    showScreen('screen-l2');
+  }
+}
+
+async function submitEmergency() {
+  showScreen('screen-loading-brief');
+  const l1Text = L1_QUESTIONS.map(q => q.label + ':\n' + (l1Answers[q.id] || '(not answered)')).join('\n\n');
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: '[GENERATE_BRIEF]\n\nEMERGENCY BRIEF — Layer 1 only. Produce a condensed marketing overview covering all six phases.\n\nLAYER 1:\n' + l1Text }], max_tokens: 3000 })
+    });
+    const data = await res.json();
+    renderBrief(data.content[0].text, 'Emergency Brief');
+    showScreen('screen-brief');
+  } catch (err) {
+    alert('Error generating emergency brief. Please try again.\n\n' + err.message);
+    showScreen('screen-l1');
+  }
+}
+
+function renderBrief(text, type) {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('brief-meta').innerHTML = 'TYPE: ' + type.toUpperCase() + '<br>DATE: ' + dateStr + '<br>POWERED BY L3V3L';
+
+  let processed = text
+    .replace(/##\s*PHASE II\s*[—–-]\s*THE MARKETING RESOLUTION IMPERATIVE/gi, '## PHASE II — THE MARKETING RESOLUTION IMPERATIVE')
+    .replace(/RTTR CITATIONS/gi, 'PUBLISHED EXPERTISE UTILIZED')
+    .replace(/### RTTR Citations/gi, '### Published Expertise Utilized');
+
+  const container = document.getElementById('brief-body');
+  container.innerHTML = marked.parse(processed);
+
+  container.querySelectorAll('p, li').forEach(el => {
+    const t = el.textContent;
+    const parts = t.match(/^([A-Za-z\s&]+(?:\s*&\s*[A-Za-z\s]+)?)\s[—–]\s(.+)\s[—–]\s(.+)\s[—–]\s(Applied in Phase .+)$/);
+    if (parts) {
+      el.innerHTML = '<span class="rttr-author">' + parts[1].trim() + '</span><span class="rttr-rest"> — ' + parts[2] + ' — ' + parts[3] + ' — ' + parts[4] + '</span>';
+      el.style.fontFamily = "'Share Tech Mono', monospace";
+      el.style.fontSize = '11px';
+      el.style.lineHeight = '2.2';
+    }
+  });
+}
+
+function resetMachine() {
+  l1Answers = {}; l2Questions = []; l2Answers = {};
+  document.querySelectorAll('textarea').forEach(t => t.value = '');
+  document.getElementById('l1-counter').textContent = '0 / 9';
+  document.getElementById('l1-bar').style.width = '0%';
+  document.getElementById('l2-counter').textContent = '0 / 12';
+  document.getElementById('l2-bar').style.width = '0%';
+  document.getElementById('btn-l1-next').disabled = true;
+  document.getElementById('btn-l2-next').disabled = true;
+  document.getElementById('brief-body').innerHTML = '';
+  showScreen('screen-l1');
+}
+
+buildL1();
+</script>
+</body>
+</html>
