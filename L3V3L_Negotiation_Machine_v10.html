@@ -1196,12 +1196,18 @@ document.getElementById('btnExportPDF').addEventListener('click', function() {
   // Remove dark-theme citation styling
   printDiv.querySelectorAll('.rttr-cite').forEach(el => { el.style.color = '#555'; el.style.borderLeft = '2px solid ' + accentColour; el.style.paddingLeft = '10px'; el.style.marginTop = '12px'; });
 
+  // Add page-break-inside: avoid to all block elements to prevent mid-line clipping
+  printDiv.querySelectorAll('p, li, h2, h3, blockquote, div').forEach(el => {
+    el.style.pageBreakInside = 'avoid';
+  });
+
   const opt = {
     margin: [15, 15, 15, 15],
     filename: 'L3V3L_Negotiation_Brief_' + dateStr + '.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
   };
 
   html2pdf().set(opt).from(printDiv).save();
