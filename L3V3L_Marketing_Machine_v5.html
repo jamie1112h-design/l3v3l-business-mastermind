@@ -101,6 +101,11 @@
     .brief-header { flex-direction: column; }
     .brief-meta { text-align: left; }
   }
+
+  #bm-trial-badge { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); padding: 4px 10px; border: 0.5px solid var(--border); border-radius: 4px; }
+  #bm-trial-badge.subscribed { color: var(--gold, #f0c040); border-color: var(--gold-dim, #8a7040); }
+  #bm-trial-badge.low { color: #c04040; border-color: #602020; }
+
 </style>
 </head>
 <body>
@@ -108,6 +113,7 @@
 <header class="site-header">
   <div class="logo">L3V3L</div>
   <div class="suite-label">BUSINESS MASTERMIND</div>
+  <div id="bm-trial-badge"></div>
 </header>
 
 <div class="hero">
@@ -204,13 +210,19 @@ let bmSessionsRemaining = null;
 
 function updateSessionBadge(remaining, status) {
   const badge = document.getElementById('bm-session-counter');
-  if (!badge) return;
+  const headerBadge = document.getElementById('bm-trial-badge');
   if (status === 'subscribed') {
-    badge.textContent = 'SUBSCRIBED · UNLIMITED ACCESS';
-    badge.style.color = '#f0c040';
+    if (badge) { badge.textContent = 'SUBSCRIBED · UNLIMITED ACCESS'; badge.style.color = '#f0c040'; }
+    if (headerBadge) { headerBadge.textContent = 'SUBSCRIBED'; headerBadge.className = 'subscribed'; }
   } else {
-    badge.textContent = remaining + ' SESSION' + (remaining === 1 ? '' : 'S') + ' REMAINING';
-    badge.style.color = remaining <= 1 ? '#c04040' : 'var(--text-dim)';
+    if (badge) {
+      badge.textContent = remaining + ' SESSION' + (remaining === 1 ? '' : 'S') + ' REMAINING';
+      badge.style.color = remaining <= 1 ? '#c04040' : 'var(--text-dim)';
+    }
+    if (headerBadge) {
+      headerBadge.textContent = remaining + ' SESSION' + (remaining === 1 ? '' : 'S') + ' REMAINING';
+      headerBadge.className = remaining <= 1 ? 'low' : '';
+    }
   }
 }
 
