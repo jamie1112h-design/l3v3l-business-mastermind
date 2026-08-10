@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>L3V3L – Negotiation Machine</title>
+<title>QuVivant Business Clarity – Negotiation Instrument</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Share+Tech+Mono&display=swap');
 
@@ -17,7 +17,7 @@
     --amber:        #B8860B;
     --amber-lite:   rgba(184,134,11,0.12);
     --amber-border: rgba(184,134,11,0.35);
-    --bg:           #06060a;
+    --bg:           #042C53;
     --card:         #0f0f18;
     --card-dark:    #090912;
     --border:       #252535;
@@ -67,8 +67,8 @@
   .brand-mark {
     position: relative;
     font-family: 'Avenir', 'Arial Black', Arial, sans-serif;
-    font-size: 36px; font-weight: 900;
-    letter-spacing: 14px; color: var(--gold); line-height: 1;
+    font-size: 20px; font-weight: 900;
+    letter-spacing: 3px; color: var(--gold); line-height: 1;
     text-shadow: 0 0 40px rgba(240,192,64,0.35), 0 0 80px rgba(240,192,64,0.1);
   }
   .brand-name {
@@ -79,7 +79,7 @@
   .brand-tag {
     font-family: 'Share Tech Mono', monospace;
     font-size: 9px; letter-spacing: 2.5px; color: #b8b8d0;
-    margin-top: 3px; text-transform: uppercase;
+    margin-top: 28px; text-transform: uppercase;
   }
 
   /* ── Machine title bar ── */
@@ -468,17 +468,16 @@
 
   <header class="site-header">
     <div class="header-glow">
-      <div class="brand-mark">L3V3L</div>
+      <div class="brand-mark">QuVivant Business Clarity</div>
     </div>
-    <div class="brand-name">Business Mastermind Suite</div>
-    <div class="brand-tag">Negotiation Intelligence · Powered by 14 Canonical Systems · 119 RTTRs</div>
+    <div class="brand-tag">Negotiation Intelligence · Powered by 14 Canonical Systems</div>
   </header>
 
   <!-- Machine title bar (hidden on key screen) -->
   <div class="machine-header" id="machineHeader" style="display:none;">
     <span class="machine-icon">🤝</span>
     <div class="machine-title-block">
-      <div class="machine-title">Negotiation Machine</div>
+      <div class="machine-title">Negotiation Instrument</div>
       <div class="machine-subtitle">Row I · High-Stakes Decision Instruments</div>
     </div>
     <button class="machine-back" id="btnBack">← Suite Index</button>
@@ -497,15 +496,15 @@
     <!-- ── SCREEN: API KEY ── -->
     <div class="screen active" id="screen-key">
       <div class="key-lockup">
-        <div class="key-headline">Negotiation Machine · Access</div>
-        <div class="key-desc">Enter your access code to activate the Negotiation Machine.</div>
+        <div class="key-headline">Negotiation Instrument · Access</div>
+        <div class="key-desc">Enter your access code to activate the Negotiation Instrument.</div>
       </div>
       <div class="key-input-wrap">
         <input type="text" class="key-input" id="apiKeyInput" placeholder="Enter your access code..." autocomplete="off" />
         <button class="key-toggle" id="keyToggle">SHOW</button>
       </div>
       <div class="key-error" id="keyError">Please enter your access code to continue.</div>
-      <button class="key-btn" id="keyBtn">Activate Negotiation Machine &nbsp;→</button>
+      <button class="key-btn" id="keyBtn">Activate Negotiation Instrument &nbsp;→</button>
     </div>
 
     <!-- ── SCREEN: LAYER 1 INTAKE ── -->
@@ -583,7 +582,7 @@
         <div class="gen-icon">🤝</div>
         <div class="gen-headline">Classifying Your Negotiation</div>
         <div class="gen-status">Generating targeted Layer 2 intake<span class="gen-dots"></span></div>
-        <div style="margin-top:16px; font-family:'Share Tech Mono',monospace; font-size:8px; letter-spacing:2px; color:var(--text-faint); text-transform:uppercase;">Analysing across 14 canonical systems · 119 RTTRs</div>
+        <div style="margin-top:16px; font-family:'Share Tech Mono',monospace; font-size:8px; letter-spacing:2px; color:var(--text-faint); text-transform:uppercase;">Analysing across 14 canonical systems</div>
       </div>
     </div>
 
@@ -649,17 +648,17 @@
   </div><!-- /main -->
 
   <footer class="site-footer">
-    L3V3L · Business Mastermind Suite · Negotiation Machine · 119 RTTRs · 14 Canonical Systems
+    QuVivant Business Clarity · Business Mastermind Suite · Negotiation Instrument · 14 Canonical Systems
   </footer>
 
 
     <div class="screen" id="screen-paywall">
       <div style="max-width:520px;margin:80px auto;text-align:center;padding:0 20px;">
         <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--gold,#f0c040);text-transform:uppercase;margin-bottom:24px;">Free Trial Complete</div>
-        <h2 style="font-family:'Inter',sans-serif;font-size:24px;font-weight:700;color:#f0f0fa;margin-bottom:16px;">Your 4 free sessions are complete.</h2>
+        <h2 style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:#f0f0fa;margin-bottom:16px;">Your 4 free sessions are complete.</h2>
         <p style="font-family:'Crimson Pro',serif;font-size:18px;color:#b8b8d0;line-height:1.7;margin-bottom:12px;">Subscribe to continue accessing all Business Mastermind machines with unlimited sessions.</p>
         <div id="bm-session-counter" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#7878a0;letter-spacing:2px;margin-bottom:28px;"></div>
-        <a href="#" onclick="window.location.href='https://buy.stripe.com/dRm6oJ7SB1j5366gBbdQQ02?client_reference_id='+encodeURIComponent(bmToken)+'&token='+encodeURIComponent(bmToken);return false;" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#f0c040,#c8960c);color:#06060a;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:6px;margin-bottom:16px;">Subscribe to Continue &rarr;</a>
+        <a href="#" onclick="window.location.href='https://buy.stripe.com/dRm6oJ7SB1j5366gBbdQQ02?client_reference_id='+encodeURIComponent(bmToken)+'&token='+encodeURIComponent(bmToken);return false;" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#f0c040,#c8960c);color:#06060a;font-family:'Cinzel',serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:6px;margin-bottom:16px;">Subscribe to Continue &rarr;</a>
         <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:#555570;margin-top:12px;">Unlimited sessions &nbsp;&middot;&nbsp; All machines &nbsp;&middot;&nbsp; Cancel anytime</div>
       </div>
     </div>
@@ -881,7 +880,7 @@ document.getElementById('l1NextBtn').addEventListener('click', async function() 
 async function generateLayer2() {
   const ok = await validateToken();
   if (!ok) return;
-  const systemPrompt = `You are the L3V3L Negotiation Machine's intake architect. Your role is to classify a negotiation from Layer 1 answers and generate exactly 10 targeted Layer 2 questions.
+  const systemPrompt = `You are the QuVivant Business Clarity Negotiation Instrument's intake architect. Your role is to classify a negotiation from Layer 1 answers and generate exactly 10 targeted Layer 2 questions.
 
 NEGOTIATION TYPES:
 - DISTRIBUTIVE: single issue, fixed-pie, one-time, price/quantity focus
@@ -1098,7 +1097,7 @@ async function generateBrief() {
   const { l1: answeredL1, l2: answeredL2 } = window._completeness;
   const briefType = answeredL2 >= 8 ? 'FULL INTELLIGENCE BRIEF' : answeredL2 >= 4 ? 'STANDARD BRIEF' : 'EMERGENCY BRIEF';
 
-  const systemPrompt = `You are the L3V3L Negotiation Machine — the most comprehensively sourced AI negotiating intelligence system available. You draw on the published wisdom of 14 canonical negotiation authorities comprising 119 documented RTTRs (Recommendations, Techniques, Tactics and Rules):
+  const systemPrompt = `You are the QuVivant Business Clarity Negotiation Instrument — the most comprehensively sourced AI negotiating intelligence system available. You draw on the published wisdom of 14 canonical negotiation authorities comprising 119 documented RTTRs (Recommendations, Techniques, Tactics and Rules):
 
 CATEGORY 1 — PHILOSOPHICAL & PRINCIPLED: Fisher, Ury & Patton (Getting to Yes — RTTRs GTY-001 to GTY-012); Jim Camp (Start With No — RTTRs CAMP-001 to CAMP-014)
 

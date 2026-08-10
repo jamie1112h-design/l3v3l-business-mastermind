@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>L3V3L — Strategy Machine</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<title>QuVivant Business Clarity — Strategy Instrument</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
@@ -12,17 +12,17 @@
     --gold: #f0c040;
     --gold-mid: #c8982e;
     --gold-dim: #8a7040;
-    --accent: #2E6AAF;
-    --accent-deep: #1a3a6a;
-    --accent-dark: #0d1a2e;
-    --accent-hi: #7ab4e8;
-    --bg: #06060a;
+    --accent: #c8982e;
+    --accent-deep: #5a4820;
+    --accent-dark: #2e2208;
+    --accent-hi: #f0c040;
+    --bg: #042C53;
     --card: #0f0f18;
     --card-dark: #090912;
     --border: #252535;
-    --border-act: #2E4A7A;
+    --border-act: #7a6030;
     --text: #f0f0fa;
-    --text-mid: #b8b8d0;
+    --text-mid: #b0b0c8;
     --text-dim: #7878a0;
     --text-faint: #555570;
     --white: #f8f8ff;
@@ -31,11 +31,11 @@
   html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Crimson Pro', serif; font-size: 17px; line-height: 1.7; }
 
   .site-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 0.5px solid var(--border); }
-  .logo { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: var(--gold); letter-spacing: 4px; }
+  .logo { font-family: 'Avenir', 'Arial Black', Arial, sans-serif; font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1.5px; }
   .suite-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; }
 
   .hero { text-align: center; padding: 52px 24px 40px; border-bottom: 0.5px solid var(--border); }
-  .machine-name { font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 700; color: #85b7eb; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .machine-name { font-family: 'Cinzel', serif; font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 8px; letter-spacing: -0.5px; }
   .machine-tagline { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-mid); letter-spacing: 1px; margin-bottom: 20px; }
   .badge-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
   .badge { font-family: 'Share Tech Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 4px; }
@@ -61,7 +61,7 @@
   textarea:focus { border-color: var(--border-act); }
 
   .btn-row { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; align-items: center; }
-  .btn-primary { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; background: linear-gradient(135deg, var(--accent-deep), var(--accent)); color: #e0eaf8; border: 1px solid var(--accent); border-radius: 6px; padding: 12px 28px; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; background: linear-gradient(135deg, var(--accent-deep), var(--accent)); color: var(--gold); border: 1px solid var(--accent); border-radius: 6px; padding: 12px 28px; cursor: pointer; transition: opacity 0.2s; }
   .btn-primary:hover { opacity: 0.88; }
   .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-secondary { font-family: 'Share Tech Mono', monospace; font-size: 11px; background: transparent; color: var(--text-dim); border: 0.5px solid var(--border); border-radius: 6px; padding: 12px 18px; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
@@ -70,16 +70,16 @@
   .loading-wrap { text-align: center; padding: 60px 24px; }
   .loading-spinner { width: 36px; height: 36px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 20px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-label { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); letter-spacing: 0.5px; }
+  .loading-label { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); letter-spacing: 0.5px; }
   .loading-sub { font-family: 'Crimson Pro', serif; font-size: 15px; color: var(--text-dim); margin-top: 8px; }
 
   .brief-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; }
   .brief-title-block .brief-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; margin-bottom: 6px; }
-  .brief-title-block h1 { font-family: 'Inter', sans-serif; font-size: 22px; font-weight: 700; color: var(--white); }
+  .brief-title-block h1 { font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700; color: var(--white); }
   .brief-meta { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: right; line-height: 2; }
 
-  .brief-body h2 { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: #85b7eb; letter-spacing: 0.5px; margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 0.5px solid var(--border-act); text-transform: uppercase; }
-  .brief-body h3 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); margin: 28px 0 12px; }
+  .brief-body h2 { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: 0.5px; margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 0.5px solid var(--border-act); text-transform: uppercase; }
+  .brief-body h3 { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); margin: 28px 0 12px; }
   .brief-body p { font-family: 'Crimson Pro', serif; font-size: 17px; color: var(--text); line-height: 1.8; margin-bottom: 14px; }
   .brief-body ul, .brief-body ol { padding-left: 24px; margin-bottom: 14px; }
   .brief-body li { font-family: 'Crimson Pro', serif; font-size: 17px; color: var(--text); line-height: 1.7; margin-bottom: 6px; }
@@ -117,8 +117,7 @@
 <body>
 
 <header class="site-header">
-  <div class="logo">L3V3L</div>
-  <div class="suite-label">BUSINESS MASTERMIND</div>
+  <div class="logo">QuVivant Business Clarity</div>
   <div id="bm-trial-badge"></div>
 </header>
 
@@ -177,8 +176,8 @@
   <div id="screen-brief" class="screen">
     <div class="brief-header">
       <div class="brief-title-block">
-        <div class="brief-label">L3V3L STRATEGIC INTELLIGENCE BRIEF</div>
-        <h1>Strategy Machine</h1>
+        <div class="brief-label">QUVIVANT BUSINESS CLARITY STRATEGIC INTELLIGENCE BRIEF</div>
+        <h1>Strategy Instrument</h1>
       </div>
       <div class="brief-meta" id="brief-meta"></div>
     </div>
@@ -194,10 +193,10 @@
   <div id="screen-paywall" class="screen">
     <div style="max-width:520px;margin:80px auto;text-align:center;padding:0 20px;">
       <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:24px;">Free Trial Complete</div>
-      <h2 style="font-family:'Inter',sans-serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:16px;">Your 4 free sessions are complete.</h2>
+      <h2 style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:16px;">Your 4 free sessions are complete.</h2>
       <p style="font-family:'Crimson Pro',serif;font-size:18px;color:var(--text-mid);line-height:1.7;margin-bottom:12px;">Subscribe to continue accessing all Business Mastermind machines with unlimited sessions.</p>
       <div id="bm-session-counter" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:28px;"></div>
-      <a href="#" onclick="window.location.href='https://buy.stripe.com/dRm6oJ7SB1j5366gBbdQQ02?client_reference_id='+encodeURIComponent(bmToken)+'&token='+encodeURIComponent(bmToken);return false;" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#f0c040,#c8960c);color:#06060a;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:6px;margin-bottom:16px;">Subscribe to Continue &rarr;</a>
+      <a href="#" onclick="window.location.href='https://buy.stripe.com/dRm6oJ7SB1j5366gBbdQQ02?client_reference_id='+encodeURIComponent(bmToken)+'&token='+encodeURIComponent(bmToken);return false;" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#f0c040,#c8960c);color:#06060a;font-family:'Cinzel',serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:6px;margin-bottom:16px;">Subscribe to Continue &rarr;</a>
       <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--text-faint);margin-top:12px;">Unlimited sessions &nbsp;&middot;&nbsp; All machines &nbsp;&middot;&nbsp; Cancel anytime</div>
     </div>
   </div>
@@ -448,7 +447,7 @@ async function submitEmergency() {
 function renderBrief(text, type) {
   const now = new Date();
   const dateStr = now.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
-  document.getElementById('brief-meta').innerHTML = 'TYPE: ' + type.toUpperCase() + '<br>DATE: ' + dateStr + '<br>POWERED BY L3V3L';
+  document.getElementById('brief-meta').innerHTML = 'TYPE: ' + type.toUpperCase() + '<br>DATE: ' + dateStr + '<br>POWERED BY QUVIVANT BUSINESS CLARITY';
 
   // Replace internal phase title with approved user-facing title
   let processed = text
@@ -544,24 +543,24 @@ buildL1();
 function exportBriefPDF() {
   const briefBody = document.getElementById('brief-body');
   const briefMeta = document.getElementById('brief-meta');
-  const machineName = 'Strategy Machine';
+  const machineName = 'Strategy Instrument';
   const dateStr = new Date().toLocaleDateString('en-CA');
 
   // Build a clean print-ready container
   const printDiv = document.createElement('div');
   printDiv.style.cssText = 'font-family: Georgia, serif; color: #111; background: #fff; padding: 32px; max-width: 800px;';
   printDiv.innerHTML =
-    '<div style="border-bottom: 2px solid #2E6AAF; padding-bottom: 16px; margin-bottom: 24px;">' +
-    '<div style="font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; color: #2E6AAF; margin-bottom: 6px;">L3V3L STRATEGIC INTELLIGENCE BRIEF</div>' +
+    '<div style="border-bottom: 2px solid #8a7040; padding-bottom: 16px; margin-bottom: 24px;">' +
+    '<div style="font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; color: #8a7040; margin-bottom: 6px;">QUVIVANT BUSINESS CLARITY STRATEGIC INTELLIGENCE BRIEF</div>' +
     '<div style="font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; color: #111;">' + machineName + '</div>' +
     '<div style="font-family: monospace; font-size: 10px; color: #666; margin-top: 8px;">' + briefMeta.innerText.replace(/\n/g, ' · ') + '</div>' +
     '</div>' +
     '<div style="font-family: Georgia, serif; font-size: 14px; line-height: 1.8; color: #111;">' + briefBody.innerHTML + '</div>' +
-    '<div style="border-top: 1px solid #ccc; margin-top: 32px; padding-top: 12px; font-family: monospace; font-size: 9px; color: #999;">Generated by L3V3L Business Mastermind · level33businessmastermind.com · ' + dateStr + '</div>';
+    '<div style="border-top: 1px solid #ccc; margin-top: 32px; padding-top: 12px; font-family: monospace; font-size: 9px; color: #999;">Generated by QuVivant Business Clarity · level33businessmastermind.com · ' + dateStr + '</div>';
 
   // Override heading colours for print
-  printDiv.querySelectorAll('h2').forEach(h => { h.style.color = '#2E6AAF'; h.style.fontFamily = 'Arial, sans-serif'; h.style.fontSize = '13px'; h.style.fontWeight = '700'; h.style.letterSpacing = '0.5px'; h.style.textTransform = 'uppercase'; h.style.borderBottom = '1px solid #ccc'; h.style.paddingBottom = '6px'; h.style.marginTop = '28px'; });
-  printDiv.querySelectorAll('h3').forEach(h => { h.style.color = '#1a3a6a'; h.style.fontFamily = 'Arial, sans-serif'; h.style.fontSize = '12px'; h.style.marginTop = '20px'; });
+  printDiv.querySelectorAll('h2').forEach(h => { h.style.color = '#8a7040'; h.style.fontFamily = 'Arial, sans-serif'; h.style.fontSize = '13px'; h.style.fontWeight = '700'; h.style.letterSpacing = '0.5px'; h.style.textTransform = 'uppercase'; h.style.borderBottom = '1px solid #ccc'; h.style.paddingBottom = '6px'; h.style.marginTop = '28px'; });
+  printDiv.querySelectorAll('h3').forEach(h => { h.style.color = '#5a4820'; h.style.fontFamily = 'Arial, sans-serif'; h.style.fontSize = '12px'; h.style.marginTop = '20px'; });
   printDiv.querySelectorAll('p, li').forEach(el => { el.style.color = '#111'; el.style.fontSize = '14px'; });
   printDiv.querySelectorAll('strong').forEach(el => { el.style.color = '#000'; });
 
@@ -572,7 +571,7 @@ function exportBriefPDF() {
 
   const opt = {
     margin: [15, 15, 15, 15],
-    filename: 'L3V3L_Strategy_Brief_' + dateStr + '.pdf',
+    filename: 'QuVivant_Business_Clarity_Strategy_Brief_' + dateStr + '.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
