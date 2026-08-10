@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QuVivant Business Clarity — Strategy Instrument</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
@@ -32,28 +32,28 @@
 
   .site-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 0.5px solid var(--border); }
   .logo { font-family: 'Avenir', 'Arial Black', Arial, sans-serif; font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 1.5px; }
-  .suite-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; }
+  .suite-label { font-family: Arial, sans-serif; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; }
 
   .hero { text-align: center; padding: 52px 24px 40px; border-bottom: 0.5px solid var(--border); }
-  .machine-name { font-family: 'Cinzel', serif; font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 8px; letter-spacing: -0.5px; }
-  .machine-tagline { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text-mid); letter-spacing: 1px; margin-bottom: 20px; }
+  .machine-name { font-family: 'Crimson Pro', serif; font-size: 28px; font-weight: 700; color: var(--gold); margin-bottom: 8px; letter-spacing: -0.5px; }
+  .machine-tagline { font-family: Arial, sans-serif; font-size: 13px; color: var(--text-mid); letter-spacing: 1px; margin-bottom: 20px; }
   .badge-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-  .badge { font-family: 'Share Tech Mono', monospace; font-size: 11px; padding: 4px 12px; border-radius: 4px; }
+  .badge { font-family: Arial, sans-serif; font-size: 11px; padding: 4px 12px; border-radius: 4px; }
   .badge-tier { background: var(--accent-dark); color: var(--accent); border: 0.5px solid var(--border-act); }
-  .badge-intake { background: #0a1a0a; color: #4a9e6a; border: 0.5px solid #2a5a3a; }
+  .badge-intake { background: var(--accent-dark); color: var(--accent); border: 0.5px solid var(--border-act); }
 
   .main { max-width: 780px; margin: 0 auto; padding: 40px 24px 80px; }
 
   .progress-wrap { margin-bottom: 36px; }
-  .progress-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+  .progress-label { font-family: Arial, sans-serif; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 10px; display: flex; justify-content: space-between; }
   .progress-bar { height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
 
-  .phase-indicator { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--accent-hi); letter-spacing: 1px; margin-bottom: 24px; }
+  .phase-indicator { font-family: Arial, sans-serif; font-size: 11px; color: var(--accent-hi); letter-spacing: 1px; margin-bottom: 24px; }
 
   .q-card { background: var(--card-dark); border: 0.5px solid var(--border); border-radius: 10px; padding: 28px 28px 24px; margin-bottom: 20px; transition: border-color 0.2s; }
   .q-card:focus-within { border-color: var(--border-act); }
-  .q-number { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-bottom: 10px; }
+  .q-number { font-family: Arial, sans-serif; font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-bottom: 10px; }
   .q-critical { color: var(--gold); }
   .q-text { font-family: 'Crimson Pro', serif; font-size: 18px; color: var(--white); line-height: 1.5; margin-bottom: 16px; }
   .q-hint { font-family: 'Crimson Pro', serif; font-size: 14px; color: var(--text-dim); font-style: italic; margin-bottom: 16px; }
@@ -61,25 +61,25 @@
   textarea:focus { border-color: var(--border-act); }
 
   .btn-row { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; align-items: center; }
-  .btn-primary { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; background: linear-gradient(135deg, var(--accent-deep), var(--accent)); color: var(--gold); border: 1px solid var(--accent); border-radius: 6px; padding: 12px 28px; cursor: pointer; transition: opacity 0.2s; }
+  .btn-primary { font-family: 'Crimson Pro', serif; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; background: linear-gradient(135deg, var(--accent-deep), var(--accent)); color: var(--gold); border: 1px solid var(--accent); border-radius: 6px; padding: 12px 28px; cursor: pointer; transition: opacity 0.2s; }
   .btn-primary:hover { opacity: 0.88; }
   .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-secondary { font-family: 'Share Tech Mono', monospace; font-size: 11px; background: transparent; color: var(--text-dim); border: 0.5px solid var(--border); border-radius: 6px; padding: 12px 18px; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+  .btn-secondary { font-family: Arial, sans-serif; font-size: 11px; background: transparent; color: var(--text-dim); border: 0.5px solid var(--border); border-radius: 6px; padding: 12px 18px; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
   .btn-secondary:hover { color: var(--text-mid); border-color: var(--text-dim); }
 
   .loading-wrap { text-align: center; padding: 60px 24px; }
   .loading-spinner { width: 36px; height: 36px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 20px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-label { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); letter-spacing: 0.5px; }
+  .loading-label { font-family: 'Crimson Pro', serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); letter-spacing: 0.5px; }
   .loading-sub { font-family: 'Crimson Pro', serif; font-size: 15px; color: var(--text-dim); margin-top: 8px; }
 
   .brief-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; }
-  .brief-title-block .brief-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 2px; margin-bottom: 6px; }
-  .brief-title-block h1 { font-family: 'Cinzel', serif; font-size: 22px; font-weight: 700; color: var(--white); }
-  .brief-meta { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: right; line-height: 2; }
+  .brief-title-block .brief-label { font-family: Arial, sans-serif; font-size: 10px; color: var(--accent); letter-spacing: 2px; margin-bottom: 6px; }
+  .brief-title-block h1 { font-family: 'Crimson Pro', serif; font-size: 22px; font-weight: 700; color: var(--white); }
+  .brief-meta { font-family: Arial, sans-serif; font-size: 10px; color: var(--text-dim); text-align: right; line-height: 2; }
 
-  .brief-body h2 { font-family: 'Cinzel', serif; font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: 0.5px; margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 0.5px solid var(--border-act); text-transform: uppercase; }
-  .brief-body h3 { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); margin: 28px 0 12px; }
+  .brief-body h2 { font-family: 'Crimson Pro', serif; font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: 0.5px; margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 0.5px solid var(--border-act); text-transform: uppercase; }
+  .brief-body h3 { font-family: 'Crimson Pro', serif; font-size: 13px; font-weight: 600; color: var(--accent-hi); margin: 28px 0 12px; }
   .brief-body p { font-family: 'Crimson Pro', serif; font-size: 17px; color: var(--text); line-height: 1.8; margin-bottom: 14px; }
   .brief-body ul, .brief-body ol { padding-left: 24px; margin-bottom: 14px; }
   .brief-body li { font-family: 'Crimson Pro', serif; font-size: 17px; color: var(--text); line-height: 1.7; margin-bottom: 6px; }
@@ -87,12 +87,12 @@
   .brief-body em { color: var(--text-mid); }
 
   .rttr-block { background: var(--card-dark); border: 0.5px solid var(--border); border-left: 2px solid var(--accent); border-radius: 0 8px 8px 0; padding: 20px 24px; margin-top: 32px; }
-  .rttr-block-label { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 12px; }
+  .rttr-block-label { font-family: Arial, sans-serif; font-size: 10px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 12px; }
   .rttr-author { color: var(--accent-hi); }
   .rttr-rest { color: #c8c8e0; }
 
   .section-divider { border: none; border-top: 0.5px solid var(--border); margin: 32px 0; }
-  .emergency-link { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--text-faint); text-decoration: none; transition: color 0.2s; }
+  .emergency-link { font-family: Arial, sans-serif; font-size: 11px; color: var(--text-faint); text-decoration: none; transition: color 0.2s; }
   .emergency-link:hover { color: var(--text-dim); }
 
   .screen { display: none; }
@@ -108,7 +108,7 @@
     .brief-meta { text-align: left; }
   }
 
-  #bm-trial-badge { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); padding: 4px 10px; border: 0.5px solid var(--border); border-radius: 4px; }
+  #bm-trial-badge { font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); padding: 4px 10px; border: 0.5px solid var(--border); border-radius: 4px; }
   #bm-trial-badge.subscribed { color: var(--gold, #f0c040); border-color: var(--gold-dim, #8a7040); }
   #bm-trial-badge.low { color: #c04040; border-color: #602020; }
 
@@ -192,12 +192,12 @@
 
   <div id="screen-paywall" class="screen">
     <div style="max-width:520px;margin:80px auto;text-align:center;padding:0 20px;">
-      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:24px;">Free Trial Complete</div>
-      <h2 style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:16px;">Your 4 free sessions are complete.</h2>
+      <div style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:24px;">Free Trial Complete</div>
+      <h2 style="font-family:'Crimson Pro',serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:16px;">Your 4 free sessions are complete.</h2>
       <p style="font-family:'Crimson Pro',serif;font-size:18px;color:var(--text-mid);line-height:1.7;margin-bottom:12px;">Subscribe to continue accessing all Business Mastermind machines with unlimited sessions.</p>
-      <div id="bm-session-counter" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:28px;"></div>
-      <a href="#" onclick="window.location.href='https://buy.stripe.com/dRm6oJ7SB1j5366gBbdQQ02?client_reference_id='+encodeURIComponent(bmToken)+'&token='+encodeURIComponent(bmToken);return false;" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#f0c040,#c8960c);color:#06060a;font-family:'Cinzel',serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:6px;margin-bottom:16px;">Subscribe to Continue &rarr;</a>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--text-faint);margin-top:12px;">Unlimited sessions &nbsp;&middot;&nbsp; All machines &nbsp;&middot;&nbsp; Cancel anytime</div>
+      <div id="bm-session-counter" style="font-family:Arial,sans-serif;font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:28px;"></div>
+      <a href="#" onclick="window.location.href='https://buy.stripe.com/dRm6oJ7SB1j5366gBbdQQ02?client_reference_id='+encodeURIComponent(bmToken)+'&token='+encodeURIComponent(bmToken);return false;" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#f0c040,#c8960c);color:#06060a;font-family:'Crimson Pro',serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:6px;margin-bottom:16px;">Subscribe to Continue &rarr;</a>
+      <div style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:1px;color:var(--text-faint);margin-top:12px;">Unlimited sessions &nbsp;&middot;&nbsp; All machines &nbsp;&middot;&nbsp; Cancel anytime</div>
     </div>
   </div>
 
@@ -465,7 +465,7 @@ function renderBrief(text, type) {
     const parts = t.match(/^([A-Za-z\s&]+(?:\s*&\s*[A-Za-z\s]+)?)\s[—–]\s(.+)\s[—–]\s(.+)\s[—–]\s(Applied in Phase .+)$/);
     if (parts) {
       el.innerHTML = '<span class="rttr-author">' + parts[1].trim() + '</span><span class="rttr-rest"> — ' + parts[2] + ' — ' + parts[3] + ' — ' + parts[4] + '</span>';
-      el.style.fontFamily = "'Share Tech Mono', monospace";
+      el.style.fontFamily = "Arial, sans-serif";
       el.style.fontSize = '11px';
       el.style.lineHeight = '2.2';
     }
