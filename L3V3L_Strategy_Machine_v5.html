@@ -56,8 +56,9 @@
   .q-number { font-family: Arial, sans-serif; font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-bottom: 10px; }
   .q-critical { color: var(--gold); }
   .q-text { font-family: 'Crimson Pro', serif; font-size: 18px; color: var(--white); line-height: 1.5; margin-bottom: 16px; }
-  .q-hint { font-family: 'Crimson Pro', serif; font-size: 14px; color: var(--text-dim); font-style: italic; margin-bottom: 16px; }
+  .q-hint { font-family: 'Crimson Pro', serif; font-size: 14px; color: var(--text-mid); font-style: italic; margin-bottom: 16px; }
   textarea { width: 100%; background: var(--card); border: 0.5px solid var(--border); border-radius: 6px; color: var(--text); font-family: 'Crimson Pro', serif; font-size: 16px; padding: 12px 14px; resize: vertical; outline: none; transition: border-color 0.2s; min-height: 100px; }
+  textarea::placeholder { color: var(--text-dim); }
   textarea:focus { border-color: var(--border-act); }
 
   .btn-row { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; align-items: center; }
@@ -110,7 +111,7 @@
 
   #bm-trial-badge { font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); padding: 4px 10px; border: 0.5px solid var(--border); border-radius: 4px; }
   #bm-trial-badge.subscribed { color: var(--gold, #f0c040); border-color: var(--gold-dim, #8a7040); }
-  #bm-trial-badge.low { color: #c04040; border-color: #602020; }
+  #bm-trial-badge.low { color: var(--gold); border-color: var(--gold-dim); }
 
 </style>
 </head>
@@ -141,6 +142,7 @@
     <div id="l1-questions"></div>
     <div class="btn-row">
       <button class="btn-primary" id="btn-l1-next" onclick="submitL1()" disabled>Generate Deep Analysis Questions →</button>
+      <button class="btn-secondary" onclick="exportIntakePDF('l1-questions', 'Layer 1 — Strategic Situation')">Save as PDF</button>
       <a href="#" class="emergency-link" onclick="submitEmergency(); return false;">Emergency Brief (Layer 1 only)</a>
     </div>
   </div>
@@ -162,6 +164,7 @@
     <div id="l2-questions"></div>
     <div class="btn-row">
       <button class="btn-primary" id="btn-l2-next" onclick="submitL2()" disabled>Generate Strategic Intelligence Brief →</button>
+      <button class="btn-secondary" onclick="exportIntakePDF('l2-questions', 'Layer 2 — Deep Strategic Intelligence')">Save as PDF</button>
     </div>
   </div>
 
@@ -222,7 +225,7 @@ function updateSessionBadge(remaining, status) {
   } else {
     if (badge) {
       badge.textContent = remaining + ' SESSION' + (remaining === 1 ? '' : 'S') + ' REMAINING';
-      badge.style.color = remaining <= 1 ? '#c04040' : 'var(--text-dim)';
+      badge.style.color = remaining <= 1 ? '#f0c040' : 'var(--text-dim)';
     }
     if (headerBadge) {
       headerBadge.textContent = remaining + ' SESSION' + (remaining === 1 ? '' : 'S') + ' REMAINING';
@@ -572,6 +575,48 @@ function exportBriefPDF() {
   const opt = {
     margin: [15, 15, 15, 15],
     filename: 'QuVivant_Business_Clarity_Strategy_Brief_' + dateStr + '.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  html2pdf().set(opt).from(printDiv).save();
+}
+
+function exportIntakePDF(containerId, screenLabel) {
+  const cards = document.querySelectorAll('#' + containerId + ' .q-card');
+  const dateStr = new Date().toLocaleDateString('en-CA');
+  const accentColour = '#8a7040';
+
+  let bodyHtml = '';
+  cards.forEach(card => {
+    const number = card.querySelector('.q-number') ? card.querySelector('.q-number').innerText : '';
+    const text   = card.querySelector('.q-text') ? card.querySelector('.q-text').innerText : '';
+    const ta     = card.querySelector('textarea');
+    const answer = (ta && ta.value.trim()) ? ta.value.trim() : '(No answer provided)';
+    bodyHtml +=
+      '<div style="margin-bottom:22px;page-break-inside:avoid;">' +
+      '<div style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:1px;color:' + accentColour + ';margin-bottom:4px;text-transform:uppercase;">' + number + '</div>' +
+      '<div style="font-family:Georgia,serif;font-size:14px;color:#111;margin-bottom:8px;font-weight:600;">' + text + '</div>' +
+      '<div style="font-family:Georgia,serif;font-size:13px;color:#333;line-height:1.6;white-space:pre-wrap;">' + answer + '</div>' +
+      '</div>';
+  });
+
+  const printDiv = document.createElement('div');
+  printDiv.style.cssText = 'font-family: Georgia, serif; color: #111; background: #fff; padding: 32px; max-width: 800px;';
+  printDiv.innerHTML =
+    '<div style="border-bottom: 2px solid ' + accentColour + '; padding-bottom: 16px; margin-bottom: 24px;">' +
+    '<div style="font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; color: ' + accentColour + '; margin-bottom: 6px;">QUVIVANT BUSINESS CLARITY STRATEGIC INTELLIGENCE</div>' +
+    '<div style="font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; color: #111;">' + screenLabel + '</div>' +
+    '<div style="font-family: monospace; font-size: 10px; color: #666; margin-top: 8px;">' + dateStr + '</div>' +
+    '</div>' +
+    bodyHtml +
+    '<div style="border-top: 1px solid #ccc; margin-top: 32px; padding-top: 12px; font-family: monospace; font-size: 9px; color: #999;">Generated by QuVivant Business Clarity · level33businessmastermind.com · ' + dateStr + '</div>';
+
+  const opt = {
+    margin: [15, 15, 15, 15],
+    filename: 'QuVivant_Business_Clarity_Strategy_' + containerId.replace('-questions', '') + '_' + dateStr + '.pdf',
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QuVivant Business Clarity – Negotiation Instrument</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap');
 
@@ -139,7 +140,7 @@
     transition: border-color 0.2s;
   }
   .key-input:focus { border-color: var(--gold-mid); }
-  .key-input::placeholder { color: var(--text-faint); letter-spacing: 1px; }
+  .key-input::placeholder { color: var(--text-dim); letter-spacing: 1px; }
   .key-toggle {
     position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
     background: none; border: none; cursor: pointer;
@@ -243,7 +244,7 @@
     min-height: 72px; transition: border-color 0.2s;
   }
   .q-textarea:focus { border-color: var(--border-act); }
-  .q-textarea::placeholder { color: var(--text-faint); font-style: italic; }
+  .q-textarea::placeholder { color: var(--text-dim); font-style: italic; }
   .q-textarea.open-field { min-height: 110px; border-color: rgba(184,134,11,0.2); }
   .q-textarea.open-field:focus { border-color: var(--amber-border); }
 
@@ -386,7 +387,7 @@
     font-size: 14px; outline: none; transition: border-color 0.2s;
   }
   .followup-input:focus { border-color: var(--border-act); }
-  .followup-input::placeholder { color: var(--text-faint); font-style: italic; }
+  .followup-input::placeholder { color: var(--text-dim); font-style: italic; }
 
   .followup-thread {
     margin-top: 16px; display: flex; flex-direction: column; gap: 12px;
@@ -452,7 +453,7 @@
 
   #bm-trial-badge { font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; color: var(--text-dim); padding: 4px 10px; border: 0.5px solid var(--border); border-radius: 4px; }
   #bm-trial-badge.subscribed { color: var(--gold, #f0c040); border-color: var(--gold-dim, #8a7040); }
-  #bm-trial-badge.low { color: #c04040; border-color: #602020; }
+  #bm-trial-badge.low { color: var(--gold); border-color: var(--gold-dim); }
 
 </style>
 </head>
@@ -572,6 +573,7 @@
 
       <div class="nav-row">
         <button class="btn-primary" id="l1NextBtn">Generate Layer 2 Intake &nbsp;→</button>
+        <button class="btn-secondary" onclick="exportIntakePDF('#screen-l1', 'Layer 1 — Negotiation Situation')">Save as PDF</button>
         <span class="nav-hint" id="l1hint">6 / 6 required fields</span>
       </div>
     </div>
@@ -602,6 +604,7 @@
       <div class="nav-row">
         <button class="btn-primary" id="l2GenerateBtn">Generate Negotiation Brief &nbsp;→</button>
         <button class="btn-secondary" id="l2BackBtn">← Back</button>
+        <button class="btn-secondary" onclick="exportIntakePDF('#l2QuestionsContainer', 'Layer 2 — Deep Preparation')">Save as PDF</button>
         <span class="nav-hint" id="l2hint">Complete as many as time allows</span>
       </div>
     </div>
@@ -629,6 +632,7 @@
         <div class="output-actions">
           <button class="btn-action" id="btnCopy">Copy</button>
           <button class="btn-action" id="btnNewBrief">New Brief</button>
+          <button class="btn-action" onclick="exportOutputPDF()">Save as PDF</button>
         </div>
       </div>
 
@@ -690,7 +694,7 @@ function updateSessionBadge(remaining, status) {
   } else {
     if (badge) {
       badge.textContent = remaining + ' SESSION' + (remaining === 1 ? '' : 'S') + ' REMAINING';
-      badge.style.color = remaining <= 1 ? '#c04040' : '#7878a0';
+      badge.style.color = remaining <= 1 ? '#f0c040' : '#7878a0';
     }
     if (headerBadge) {
       headerBadge.textContent = remaining + ' SESSION' + (remaining === 1 ? '' : 'S') + ' REMAINING';
@@ -787,6 +791,84 @@ let conversationHistory = [];
 // ═══════════════════════════════════════════════════════════════════════
 // SCREEN MANAGEMENT
 // ═══════════════════════════════════════════════════════════════════════
+function exportIntakePDF(containerSelector, screenLabel) {
+  const blocks = document.querySelectorAll(containerSelector + ' .q-block');
+  const dateStr = new Date().toLocaleDateString('en-CA');
+  const accentColour = '#8a7040';
+
+  let bodyHtml = '';
+  blocks.forEach(block => {
+    const num    = block.querySelector('.q-num') ? block.querySelector('.q-num').innerText : '';
+    const tier   = block.querySelector('.q-tier') ? block.querySelector('.q-tier').innerText : '';
+    const text   = block.querySelector('.q-text') ? block.querySelector('.q-text').innerText : '';
+    const ta     = block.querySelector('textarea');
+    const answer = (ta && ta.value.trim()) ? ta.value.trim() : '(No answer provided)';
+    const label  = tier ? (num + ' — ' + tier.toUpperCase()) : num;
+    bodyHtml +=
+      '<div style="margin-bottom:22px;page-break-inside:avoid;">' +
+      '<div style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:1px;color:' + accentColour + ';margin-bottom:4px;text-transform:uppercase;">' + label + '</div>' +
+      '<div style="font-family:Georgia,serif;font-size:14px;color:#111;margin-bottom:8px;font-weight:600;">' + text + '</div>' +
+      '<div style="font-family:Georgia,serif;font-size:13px;color:#333;line-height:1.6;white-space:pre-wrap;">' + answer + '</div>' +
+      '</div>';
+  });
+
+  const printDiv = document.createElement('div');
+  printDiv.style.cssText = 'font-family: Georgia, serif; color: #111; background: #fff; padding: 32px; max-width: 800px;';
+  printDiv.innerHTML =
+    '<div style="border-bottom: 2px solid ' + accentColour + '; padding-bottom: 16px; margin-bottom: 24px;">' +
+    '<div style="font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; color: ' + accentColour + '; margin-bottom: 6px;">QUVIVANT BUSINESS CLARITY NEGOTIATION INTELLIGENCE</div>' +
+    '<div style="font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; color: #111;">' + screenLabel + '</div>' +
+    '<div style="font-family: monospace; font-size: 10px; color: #666; margin-top: 8px;">' + dateStr + '</div>' +
+    '</div>' +
+    bodyHtml +
+    '<div style="border-top: 1px solid #ccc; margin-top: 32px; padding-top: 12px; font-family: monospace; font-size: 9px; color: #999;">Generated by QuVivant Business Clarity · level33businessmastermind.com · ' + dateStr + '</div>';
+
+  const opt = {
+    margin: [15, 15, 15, 15],
+    filename: 'QuVivant_Business_Clarity_Negotiation_' + screenLabel.replace(/[^A-Za-z0-9]+/g, '_') + '_' + dateStr + '.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  html2pdf().set(opt).from(printDiv).save();
+}
+
+function exportOutputPDF() {
+  const briefContent = document.getElementById('briefContent');
+  const dateStr = new Date().toLocaleDateString('en-CA');
+  const accentColour = '#8a7040';
+
+  const printDiv = document.createElement('div');
+  printDiv.style.cssText = 'font-family: Georgia, serif; color: #111; background: #fff; padding: 32px; max-width: 800px;';
+  printDiv.innerHTML =
+    '<div style="border-bottom: 2px solid ' + accentColour + '; padding-bottom: 16px; margin-bottom: 24px;">' +
+    '<div style="font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 2px; color: ' + accentColour + '; margin-bottom: 6px;">QUVIVANT BUSINESS CLARITY NEGOTIATION BRIEF</div>' +
+    '<div style="font-family: Arial, sans-serif; font-size: 22px; font-weight: 700; color: #111;">Negotiation Instrument</div>' +
+    '<div style="font-family: monospace; font-size: 10px; color: #666; margin-top: 8px;">' + dateStr + '</div>' +
+    '</div>' +
+    '<div style="font-family: Georgia, serif; font-size: 14px; line-height: 1.8; color: #111;">' + briefContent.innerHTML + '</div>' +
+    '<div style="border-top: 1px solid #ccc; margin-top: 32px; padding-top: 12px; font-family: monospace; font-size: 9px; color: #999;">Generated by QuVivant Business Clarity · level33businessmastermind.com · ' + dateStr + '</div>';
+
+  printDiv.querySelectorAll('h1, h2, h3').forEach(h => { h.style.color = accentColour; h.style.fontFamily = 'Arial, sans-serif'; h.style.fontSize = '13px'; h.style.fontWeight = '700'; h.style.letterSpacing = '0.5px'; h.style.textTransform = 'uppercase'; h.style.borderBottom = '1px solid #ccc'; h.style.paddingBottom = '6px'; h.style.marginTop = '28px'; });
+  printDiv.querySelectorAll('p, li').forEach(el => { el.style.color = '#111'; el.style.fontSize = '14px'; });
+  printDiv.querySelectorAll('strong').forEach(el => { el.style.color = '#000'; });
+  printDiv.querySelectorAll('.rttr-cite, .rttr-author, .rttr-rest').forEach(el => { el.style.color = '#5a4820'; });
+  printDiv.querySelectorAll('p, li, h1, h2, h3, blockquote, div').forEach(el => { el.style.pageBreakInside = 'avoid'; });
+
+  const opt = {
+    margin: [15, 15, 15, 15],
+    filename: 'QuVivant_Business_Clarity_Negotiation_Brief_' + dateStr + '.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  html2pdf().set(opt).from(printDiv).save();
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + id).classList.add('active');
