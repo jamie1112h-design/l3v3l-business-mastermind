@@ -1,45 +1,71 @@
 // ============================================================
-// L3V3L BUSINESS MASTERMIND — netlify/functions/negotiate.js
-// Serverless proxy — API key server-side only, never in browser
+// QuVivant Business Clarity — netlify/functions/negotiate.js (v4)
+// Serverless proxy for the Negotiation instrument.
+// The Anthropic key and every prompt stay server-side. The browser supplies only
+// a mode, the user's access token, and the conversation messages. It cannot choose
+// the system prompt, the model, or the token limit, and requests without a valid
+// access token or from an unlisted origin are refused.
 // ============================================================
 
-exports.handler = async (event) => {
+const ALLOWED_ORIGINS = [
+  'https://quvivant.com',
+  'https://www.quvivant.com',
+  'https://monumental-sopapillas-d1862e.netlify.app'
+];
+const VALIDATE_URL = 'https://wljxufilyobwpbavvwsr.supabase.co/functions/v1/bm-trial-validate';
+const MODEL = 'claude-sonnet-5';
 
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-      },
-      body: ''
-    };
-  }
+// Request limits
+const MAX_MESSAGES      = 40;
+const MAX_MESSAGE_CHARS = 40000;
+const MAX_TOTAL_CHARS   = 100000;
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
-  }
+// ── Layer 2 intake architect prompt (moved here from the page) ───────────────
+const LAYER2_SYSTEM = `You are the QuVivant Business Clarity Negotiation Instrument's intake architect. Your role is to classify a negotiation from Layer 1 answers and generate exactly 10 targeted Layer 2 questions.
 
-  let payload;
-  try {
-    payload = JSON.parse(event.body);
-  } catch {
-    return {
-      statusCode: 400,
-      headers: corsHeaders(),
-      body: JSON.stringify({ error: { message: 'Invalid request body.' } })
-    };
-  }
+NEGOTIATION TYPES:
+- DISTRIBUTIVE: single issue, fixed-pie, one-time, price/quantity focus
+- INTEGRATIVE: multiple issues, mutual gain possible, ongoing relationship
+- MULTI-PARTY: three or more parties, coalition dynamics, shifting alliances
+- CRISIS/HIGH-STAKES: time-compressed, high-consequence, breakdown is costly
+- COALITION: outcome depends on alliance management as much as substance
 
-  const { messages, system, max_tokens, model } = payload;
+LAYER 2 QUESTION DOMAINS BY TYPE:
+- DISTRIBUTIVE: anchor strategy, concession sequencing, reservation price, higher authority exposure, written authority available, nibble risk, competitive alternatives
+- INTEGRATIVE: underlying interests vs stated positions, shared gains available, objective criteria, relationship history, Five Core Concerns active, emotional dynamics, post-deal relationship
+- MULTI-PARTY: full stakeholder map, each party's real interests, existing alliances, information asymmetry between parties, unseen influencers, coalition formation risk
+- CRISIS/HIGH-STAKES: their primary fear in breakdown, emotional state and volatility, prior behaviour under pressure, information withheld, Black Swan candidates, face-saving options
+- COALITION: alliance architecture, loyalty and defection risk, shared enemy or objective, sequencing of approaches, regime change risk
 
-  // ── Build the condensed negotiation system prompt ──────────────────────────
-  // The full RTTR library (119 entries) is referenced by ID in output.
-  // The runtime prompt carries principles and citation rules only —
-  // not the full catalogue — to stay within Netlify's 26s timeout.
+RULES FOR QUESTION GENERATION:
+1. Never repeat ground covered in Layer 1
+2. Always deepen, never restate
+3. Follow signals in L1-06 (the open intelligence field) — if it flags complexity, pursue it
+4. Generate exactly 10 questions
+5. Assign each question a tier: CRITICAL (the instrument cannot produce a full brief without it) or IMPORTANT (significantly improves brief quality)
+6. First 4 questions should always be CRITICAL
 
-  const NEGOTIATION_SYSTEM = `You are the L3V3L Negotiation Machine — the most comprehensively sourced AI negotiating intelligence system available, drawing on 14 canonical authorities and 119 documented RTTRs.
+OUTPUT FORMAT — respond with valid JSON only, no markdown, no preamble:
+{
+  "negotiationType": "DISTRIBUTIVE|INTEGRATIVE|MULTI-PARTY|CRISIS/HIGH-STAKES|COALITION",
+  "classificationReason": "2-3 sentence explanation of why this classification applies",
+  "layer2Headline": "Short headline for the Layer 2 intake screen (e.g. 'Mapping the Counterpart's Architecture')",
+  "layer2Desc": "One sentence description of what Layer 2 will establish",
+  "questions": [
+    {
+      "id": "l2q1",
+      "tier": "CRITICAL",
+      "text": "Full question text",
+      "placeholder": "Helpful example answer placeholder"
+    }
+  ]
+}`;
+
+// ── Negotiation brief and follow-up prompt ───────────────────────────────────
+// The full RTTR library (119 entries) is referenced by ID in output.
+// The runtime prompt carries principles and citation rules only,
+// not the full catalogue, to stay within Netlify's 26s timeout.
+const NEGOTIATION_SYSTEM = `You are the QuVivant Negotiation Instrument — the most comprehensively sourced AI negotiating intelligence system available, drawing on 14 canonical authorities and 119 documented RTTRs.
 
 SOURCE SYSTEMS AND RTTR RANGES:
 Category 1 — Philosophical/Principled: Fisher, Ury & Patton [GTY-001 to GTY-012]; Jim Camp [CAMP-001 to CAMP-014]
@@ -60,18 +86,18 @@ KEY RTTRs TO APPLY BY SITUATION:
 - Intelligence/preparation: TZU-013, BUS-007, COH-003, HUG-007
 - Closing: DAW-011, DAW-012, VOSS-009, G33-007
 
-NEGOTIATION TYPE CLASSIFICATION:
-DISTRIBUTIVE — single issue, fixed-pie, one-time: prioritise Dawson, Camp, Machiavelli, G48
-INTEGRATIVE — multiple issues, ongoing relationship, mutual gain: prioritise GTY, Voss, Shapiro, Goleman
-MULTI-PARTY — three+ parties, coalition dynamics: prioritise Sun Tzu, G33, G48 Law 31, Bustamante SADRAT
-CRISIS/HIGH-STAKES — time-compressed, high-consequence: prioritise Voss, Hughes, Bustamante, Sun Tzu
-COALITION — alliance management primary: prioritise Sun Tzu, Machiavelli, G33
+NEGOTIATION TYPE CLASSIFICATION (a starting guide, not a limit: draw on any system that serves this negotiation):
+DISTRIBUTIVE — single issue, fixed-pie, one-time: often useful — Dawson, Camp, Machiavelli, G48
+INTEGRATIVE — multiple issues, ongoing relationship, mutual gain: often useful — GTY, Voss, Shapiro, Goleman
+MULTI-PARTY — three+ parties, coalition dynamics: often useful — Sun Tzu, G33, G48 Law 31, Bustamante SADRAT
+CRISIS/HIGH-STAKES — time-compressed, high-consequence: often useful — Voss, Hughes, Bustamante, Sun Tzu
+COALITION — alliance management primary: often useful — Sun Tzu, Machiavelli, G33
 
 ADJUDICATION RULES:
-Tier 1: Negotiation type governs primary system selection
+Tier 1: Negotiation type guides primary system selection
 Tier 2: High stakes + one-time = power systems; ongoing relationship = principled/EI systems
 Tier 3: When 3+ systems recommend the same move (Convergence), elevate to Primary Recommendation — known convergences: strategic silence (CAMP-007, VOSS-011, DAW-004, TZU-013), never accept first offer (DAW-002, CAMP-003, COH-001, MAC-008), identify real decision-maker (CAMP-011, DAW-007, TZU-013, BUS-001)
-Tier 4: When systems genuinely conflict, present the divergence explicitly with a Machine Default
+Tier 4: When systems genuinely conflict, present the divergence explicitly with an Instrument Default
 
 INLINE CITATION FORMAT: [RTTR-XXX-NNN | Author]
 Example: "Deploy an Accusation Audit before the meeting opens. [RTTR-VOSS-004 | Voss]"
@@ -100,12 +126,50 @@ CORE OPERATING RULES:
 - Be specific to this negotiation throughout — name the counterpart, reference their constraints, use their deadline
 - Never give generic advice — every recommendation must be calibrated to the intake data provided
 - When inferring from incomplete data, flag it: [RTTR-BUS-002 — inferred from partial data]
-- The machine is authoritative and direct — no hedging, no unnecessary qualifications
+- The instrument is authoritative and direct — no hedging, no unnecessary qualifications
 - Democratising enterprise-grade negotiating intelligence is the mission`;
 
-  // Use provided system prompt if given (for follow-up queries), otherwise use NEGOTIATION_SYSTEM
-  console.log('negotiate.js called — model:', model, 'max_tokens:', max_tokens, 'messages count:', messages?.length, 'system provided:', !!system);
-  const systemToUse = system || NEGOTIATION_SYSTEM;
+// ── Modes: the only three things this endpoint will do ───────────────────────
+const MODES = {
+  layer2:   { max_tokens: 2000, system: LAYER2_SYSTEM },
+  brief:    { max_tokens: 4000, system: NEGOTIATION_SYSTEM },
+  followup: { max_tokens: 1500, system: NEGOTIATION_SYSTEM }
+};
+
+exports.handler = async (event) => {
+  const origin   = (event.headers && (event.headers.origin || event.headers.Origin)) || '';
+  const originOk = !origin || ALLOWED_ORIGINS.includes(origin);
+  const cors     = corsHeaders(origin && originOk ? origin : ALLOWED_ORIGINS[0]);
+
+  if (event.httpMethod === 'OPTIONS') {
+    if (!originOk) return { statusCode: 403, headers: cors, body: '' };
+    return {
+      statusCode: 200,
+      headers: { ...cors, 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' },
+      body: ''
+    };
+  }
+
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, headers: cors, body: 'Method Not Allowed' };
+  }
+  if (!originOk) return fail(403, 'Origin not allowed.', cors);
+
+  let payload;
+  try {
+    payload = JSON.parse(event.body);
+  } catch {
+    return fail(400, 'Invalid request body.', cors);
+  }
+
+  // The caller's system prompt, model, and max_tokens are deliberately ignored.
+  const { mode, token, messages } = payload || {};
+  const cfg = Object.prototype.hasOwnProperty.call(MODES, mode) ? MODES[mode] : null;
+  if (!cfg) return fail(400, 'Unknown mode.', cors);
+  if (!validMessages(messages)) return fail(400, 'Invalid messages.', cors);
+  if (!(await tokenIsValid(token))) return fail(401, 'A valid access token is required.', cors);
+
+  console.log('negotiate.js called — mode:', mode, 'messages:', messages.length);
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -116,9 +180,10 @@ CORE OPERATING RULES:
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: model || 'claude-sonnet-5',
-        max_tokens: max_tokens || 1200,
-        system: systemToUse,
+        model: MODEL,
+        max_tokens: cfg.max_tokens,
+        thinking: { type: 'disabled' },
+        system: cfg.system,
         messages
       })
     });
@@ -127,23 +192,53 @@ CORE OPERATING RULES:
 
     return {
       statusCode: response.status,
-      headers: corsHeaders(),
+      headers: cors,
       body: JSON.stringify(data)
     };
 
   } catch (err) {
     console.error('Anthropic proxy error:', err);
-    return {
-      statusCode: 502,
-      headers: corsHeaders(),
-      body: JSON.stringify({ error: { message: 'Proxy error: ' + err.message } })
-    };
+    return fail(502, 'Proxy error: ' + err.message, cors);
   }
 };
 
-function corsHeaders() {
+// A token is accepted if the trial service recognises it. It does not have to have sessions left:
+// the last session is consumed before the brief and follow-ups are requested.
+async function tokenIsValid(token) {
+  if (typeof token !== 'string' || !/^[A-Za-z0-9_-]{16,128}$/.test(token)) return false;
+  try {
+    const res = await fetch(VALIDATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, peek: true })
+    });
+    const d = await res.json();
+    return typeof d.uses_remaining === 'number' || d.status === 'subscribed' || d.error === 'trial_exhausted';
+  } catch (err) {
+    console.error('Token check failed:', err.message);
+    return false;
+  }
+}
+
+function validMessages(m) {
+  if (!Array.isArray(m) || m.length === 0 || m.length > MAX_MESSAGES) return false;
+  let total = 0;
+  for (const x of m) {
+    if (!x || (x.role !== 'user' && x.role !== 'assistant')) return false;
+    if (typeof x.content !== 'string' || x.content.length === 0 || x.content.length > MAX_MESSAGE_CHARS) return false;
+    total += x.content.length;
+  }
+  return total <= MAX_TOTAL_CHARS && m[0].role === 'user' && m[m.length - 1].role === 'user';
+}
+
+function corsHeaders(origin) {
   return {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
+    'Access-Control-Allow-Origin': origin,
+    'Vary': 'Origin'
   };
+}
+
+function fail(status, message, cors) {
+  return { statusCode: status, headers: cors, body: JSON.stringify({ error: { message } }) };
 }
