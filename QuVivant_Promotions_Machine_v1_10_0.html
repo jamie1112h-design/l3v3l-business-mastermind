@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuVivant Business Clarity – Promotions Instrument</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+  /* Row II design, copied from Market Gaps v10. Two system font families only: serif and sans-serif. No web fonts are loaded. */
+  :root {
+    --gold:#f0c040; --gold-mid:#c8982e; --gold-dim:#8a7040;
+    --accent:#A78BFA; --accent-hi:#C4B5FD; --accent-deep:#4B3A94; --accent-dark:#1B1438;
+    --accent-lite:rgba(167,139,250,0.13); --accent-line:rgba(167,139,250,0.45);
+    --bg:#042C53; --card:#0f0f18; --card-dark:#090912; --border:#2b2b44; --border-act:#7a68c4;
+    --text:#f0f0fa; --text-mid:#c4c4dc; --text-dim:#9a9ac0; --white:#f8f8ff; --error:#ff8a7a;
+    --serif:serif; --sans:sans-serif;
+  }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  html, body { min-height:100%; background:var(--bg); color:var(--text); font-family:var(--serif); font-size:18px; line-height:1.65; overflow-x:hidden; }
+  button, input, textarea { font-family:inherit; }
+  :focus-visible { outline:2px solid var(--accent-hi); outline-offset:2px; }
+
+  .ambient { position:fixed; inset:0; pointer-events:none; z-index:0; }
+  .amb { position:absolute; border-radius:50%; }
+  .amb-1 { top:-8%; left:10%; width:600px; height:600px; background:radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 65%); }
+  .amb-2 { bottom:5%; right:5%; width:400px; height:400px; background:radial-gradient(circle, rgba(240,192,64,0.05) 0%, transparent 65%); }
+  .wrapper { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; }
+
+  .site-header { display:flex; align-items:center; justify-content:space-between; padding:18px 32px; border-bottom:1px solid var(--border); background:linear-gradient(180deg, #111120 0%, var(--bg) 100%); }
+  .brand-mark { font-family:var(--sans); font-size:18px; font-weight:400; letter-spacing:1.5px; color:var(--gold); text-shadow:0 0 40px rgba(240,192,64,0.35); }
+  #bm-trial-badge { font-family:var(--sans); font-size:13px; letter-spacing:1px; color:var(--text-dim); padding:4px 12px; border:1px solid var(--border); border-radius:4px; display:none; }
+  #bm-trial-badge.show { display:inline-block; }
+
+
+  .machine-header { display:flex; align-items:center; gap:16px; max-width:820px; margin:8px auto 0; padding:0 24px; width:100%; }
+  .machine-icon { font-size:34px; line-height:1; }
+  .machine-title { font-size:34px; font-weight:400; color:var(--accent); letter-spacing:-0.5px; line-height:1.1; }
+  .machine-subtitle { font-family:var(--sans); font-size:14px; color:var(--text-mid); margin-top:4px; }
+  .machine-back { margin-left:auto; font-family:var(--sans); font-size:14px; color:var(--text-mid); border:1px solid var(--border); border-radius:4px; padding:8px 14px; background:none; cursor:pointer; transition:color .2s, border-color .2s; }
+  .machine-back:hover { color:var(--white); border-color:var(--border-act); }
+
+  .progress-wrap { max-width:820px; margin:22px auto 0; padding:0 24px; width:100%; }
+  .progress-bar-outer { height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .progress-bar-inner { height:100%; width:0%; background:linear-gradient(90deg, var(--accent-deep), var(--accent)); border-radius:2px; transition:width .4s ease; }
+  .progress-label { font-family:var(--sans); font-size:13px; color:var(--text-dim); margin-top:8px; text-align:right; }
+
+  .main { max-width:820px; margin:0 auto; padding:24px 24px 60px; width:100%; flex:1; }
+
+  .intake-header { margin-bottom:26px; }
+  .intake-layer-tag { font-family:var(--sans); font-size:14px; color:var(--accent-hi); margin-bottom:8px; display:block; }
+  .intake-headline { font-size:26px; font-weight:400; color:var(--white); line-height:1.2; margin-bottom:10px; }
+  .intake-desc { font-size:18px; color:var(--text-mid); line-height:1.6; }
+  .intake-notice { background:var(--accent-lite); border:1px solid var(--accent-line); border-radius:4px; padding:12px 16px; margin-top:14px; font-family:var(--sans); font-size:14px; color:var(--accent-hi); line-height:1.55; }
+
+  .q-block { margin-bottom:24px; background:var(--card-dark); border:1px solid var(--border); border-radius:8px; padding:22px 24px 20px; transition:border-color .2s; }
+  .q-block:focus-within { border-color:var(--border-act); }
+  .q-label { display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  .q-num { font-family:var(--sans); font-size:14px; color:var(--accent-hi); }
+  .q-tier { font-family:var(--sans); font-size:12px; padding:2px 8px; border-radius:3px; color:var(--text-mid); background:rgba(176,176,200,0.08); border:1px solid rgba(176,176,200,0.28); }
+  .q-tier.critical { color:var(--accent-hi); background:var(--accent-lite); border:1px solid var(--accent-line); }
+  .q-text { font-size:20px; color:var(--white); line-height:1.5; margin-bottom:6px; }
+  .q-help { font-size:18px; color:var(--text-mid); line-height:1.5; margin-bottom:14px; }
+  .q-textarea, input[type="text"] { width:100%; min-height:96px; resize:vertical; background:var(--card); border:1px solid var(--border); border-radius:6px; padding:12px 14px; color:var(--text); font-family:var(--serif); font-size:18px; line-height:1.55; outline:none; transition:border-color .2s; }
+  input[type="text"] { min-height:0; }
+  .q-textarea:focus, input[type="text"]:focus { border-color:var(--border-act); }
+  .q-textarea::placeholder, input::placeholder { color:var(--text-dim); font-style:italic; }
+  .q-textarea:disabled { opacity:.5; }
+  .q-select { width:100%; background:var(--card); border:1px solid var(--border); border-radius:6px; padding:12px 14px; color:var(--text); font-family:var(--serif); font-size:18px; outline:none; }
+  .q-select:focus { border-color:var(--border-act); }
+
+  .choices { display:flex; flex-wrap:wrap; gap:10px; }
+  .choices.cols { display:grid; grid-template-columns:1fr 1fr; }
+  .choice { position:relative; }
+  .choice input { position:absolute; opacity:0; inset:0; width:100%; height:100%; cursor:pointer; margin:0; }
+  .choice span { display:block; padding:10px 18px; border:1px solid var(--border); border-radius:6px; font-size:18px; color:var(--text); background:var(--card); line-height:1.3; transition:border-color .15s, background .15s; }
+  .choice input:hover + span { border-color:var(--border-act); }
+  .choice input:checked + span { border-color:var(--accent); background:var(--accent-lite); color:var(--accent-hi); font-weight:600; }
+  .choice input:focus-visible + span { outline:2px solid var(--accent-hi); outline-offset:2px; }
+  .choices.cols .choice span { height:100%; }
+  .other-row { margin-top:14px; }
+  .other-row label { display:block; font-family:var(--sans); font-size:14px; color:var(--text-mid); margin-bottom:6px; }
+
+  .asset-row { display:grid; grid-template-columns:230px 1fr; align-items:center; gap:16px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .asset-row:last-child { border-bottom:none; }
+  .asset-name { font-size:18px; color:var(--white); }
+  .asset-row .choices { gap:8px; }
+  .asset-row .choice span { padding:7px 14px; font-size:17px; }
+
+  .check-line { display:flex; align-items:center; gap:12px; margin-top:14px; font-size:18px; color:var(--text); cursor:pointer; }
+  .check-line input { width:20px; height:20px; accent-color:var(--accent); }
+  .save-note { margin-top:0; padding:14px 16px; border:1px solid var(--accent-line); border-radius:6px; background:var(--accent-lite); }
+  .confirm-meta { font-family:var(--sans); font-size:14px; color:var(--text-mid); margin-bottom:18px; }
+
+  .review-block { border-bottom:1px solid var(--border); padding:14px 0; }
+  .review-block:last-child { border-bottom:none; }
+  .review-q { font-family:var(--sans); font-size:14px; color:var(--accent-hi); margin-bottom:4px; }
+  .review-a { font-size:19px; color:var(--white); line-height:1.5; }
+  .review-edit { margin-top:6px; background:none; border:none; color:var(--text-mid); font-family:var(--sans); font-size:14px; cursor:pointer; text-decoration:underline; padding:0; }
+  .review-edit:hover { color:var(--white); }
+
+  .nav-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:28px; padding-top:22px; border-top:1px solid var(--border); }
+  .btn-primary { font-family:var(--serif); font-size:17px; font-weight:600; letter-spacing:.3px; background:linear-gradient(135deg, var(--accent-deep), #6a54c8); color:var(--white); border:1px solid var(--accent); border-radius:6px; padding:13px 28px; cursor:pointer; transition:opacity .2s, box-shadow .2s; }
+  .btn-primary:hover { opacity:.92; box-shadow:0 0 20px rgba(167,139,250,0.25); }
+  .btn-primary:disabled { opacity:.4; cursor:not-allowed; box-shadow:none; }
+  .btn-secondary { font-family:var(--sans); font-size:14px; background:transparent; color:var(--text-mid); border:1px solid var(--border); border-radius:6px; padding:12px 18px; cursor:pointer; transition:color .2s, border-color .2s; }
+  .btn-secondary:hover:not(:disabled) { color:var(--white); border-color:var(--border-act); }
+  .btn-secondary:disabled { opacity:.4; cursor:not-allowed; }
+  .nav-hint { margin-left:auto; font-family:var(--sans); font-size:14px; color:var(--text-dim); }
+
+  .loading-wrap { text-align:center; padding:64px 20px; }
+  .loading-spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .9s linear infinite; margin:0 auto 22px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-label { font-size:22px; color:var(--accent-hi); }
+  .loading-sub { font-family:var(--sans); font-size:15px; color:var(--text-dim); margin-top:10px; }
+  @media (prefers-reduced-motion: reduce) { .loading-spinner { animation:none; } }
+
+  .site-footer { text-align:center; padding:16px; font-family:var(--sans); font-size:13px; color:var(--text-dim); border-top:1px solid var(--border); margin-top:16px; }
+
+  /* ── Output screen: same pattern as Market Gaps (meta bar, one brief card, follow-up) ── */
+  .output-meta { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:22px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+  .output-badge { font-family:var(--sans); font-size:14px; color:var(--accent-hi); background:var(--accent-lite); border:1px solid var(--accent-line); border-radius:4px; padding:4px 12px; }
+  .output-completeness { font-family:var(--sans); font-size:14px; color:var(--text-dim); }
+  .output-actions { margin-left:auto; display:flex; gap:8px; }
+  .btn-action { font-family:var(--sans); font-size:14px; padding:8px 14px; background:none; border:1px solid var(--border); border-radius:4px; color:var(--text-mid); cursor:pointer; transition:color .2s, border-color .2s; }
+  .btn-action:hover { color:var(--white); border-color:var(--border-act); }
+  .brief-body { font-family:var(--serif); background:var(--card-dark); border:1px solid rgba(196,181,253,0.5); border-radius:8px; padding:36px 42px; word-wrap:break-word; }
+  .brief-body h1 { font-size:27px; font-weight:400; color:#ddd8f5; margin:0 0 6px; line-height:1.2; }
+  .brief-body h2 { font-size:23px; font-weight:400; color:var(--accent); margin:0 0 22px; padding-bottom:12px; border-bottom:1px solid var(--accent-line); }
+  .brief-body h3 { font-size:23px; font-weight:400; color:#d9ceff; margin:32px 0 12px; }
+  .brief-body p { font-size:21px; color:#c5c5dc; line-height:1.75; margin-bottom:18px; }
+  .brief-body ul { padding-left:26px; margin-bottom:14px; }
+  .brief-body li { font-size:19px; color:#babad3; line-height:1.6; margin-bottom:8px; }
+  .brief-body strong { color:#d6d4ec; font-weight:600; }
+  .brief-body em { color:#b2b2cc; }
+  @media print { body.print-one .brief-body:not(.print-this), body.print-one .output-meta, body.print-one .output-followup, body.print-one .entire-row, body.print-one .intake-notice { display:none !important; } }
+  .box-actions { display:flex; gap:8px; justify-content:space-between; align-items:center; margin-top:34px; padding-top:20px; border-top:1px solid var(--accent-line); }
+  .nav-btn { white-space:nowrap; flex-shrink:0; font-family:var(--sans); font-size:14px; color:var(--accent-hi); background:var(--accent-lite); border:1px solid var(--accent-line); border-radius:4px; padding:5px 12px; cursor:pointer; transition:color .2s, border-color .2s; }
+  .nav-btn:hover { color:var(--white); border-color:var(--border-act); }
+  .brief-desc { font-family:var(--sans); font-size:17px; line-height:1.55; color:var(--text-mid); margin:0 0 22px; }
+  .box-actions .grp { display:flex; gap:8px; }
+  .entire-row { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:28px; padding:14px 18px; border:1px solid rgba(196,181,253,0.5); border-radius:8px; background:var(--card-dark); }
+  .entire-row .lbl { font-family:var(--sans); font-size:16px; color:var(--accent-hi); }
+  .entire-row .grp { display:flex; gap:8px; }
+  .hrow { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:32px 0 12px; }
+  .hrow h3 { margin:0 !important; }
+  .brief-body + .brief-body { margin-top:28px; }
+  .output-followup { margin-top:28px; padding-top:22px; border-top:1px solid var(--border); }
+  .followup-label { font-family:var(--sans); font-size:14px; color:var(--text-mid); margin-bottom:10px; display:block; }
+  .followup-input-wrap { display:flex; gap:10px; flex-wrap:wrap; }
+  .followup-input { flex:1; min-width:220px; background:var(--card-dark); border:1px solid rgba(196,181,253,0.5); border-radius:6px; padding:12px 14px; color:var(--white); font-family:var(--serif); font-size:18px; outline:none; transition:border-color .2s; }
+  .followup-input:focus { border-color:var(--border-act); }
+  .followup-input::placeholder { color:var(--text-dim); font-style:italic; }
+  .thread-entry { margin-top:14px; padding:14px 18px; border-radius:6px; font-size:18px; line-height:1.65; background:var(--accent-lite); border:1px solid var(--accent-line); color:var(--text); }
+  .notice-error { border-color:var(--error); color:var(--error); }
+</style>
+</head>
+<body>
+<div class="ambient"><div class="amb amb-1"></div><div class="amb amb-2"></div></div>
+<div class="wrapper">
+
+  <header class="site-header">
+    <div class="brand-mark">QuVivant Business Clarity</div>
+    <div id="bm-trial-badge"></div>
+  </header>
+
+  <div class="machine-header">
+    <span class="machine-icon" aria-hidden="true">📣</span>
+    <div>
+      <div class="machine-title">Promotions</div>
+      <div class="machine-subtitle">Row II · Environmental Intelligence</div>
+    </div>
+    <div style="margin-left:auto; display:flex; gap:10px;"><button class="nav-btn" id="btnHistory" type="button">Previous Briefs</button><button class="nav-btn" id="btnBack" type="button">← Suite Index</button></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel"></div>
+  </div>
+
+  <main class="main" id="panel" aria-live="polite"></main>
+
+  <footer class="site-footer">QuVivant Business Clarity · Promotions Instrument · Promotional Marketing Intelligence</footer>
+</div>
+
+<script>
+/* ── Question definitions ─────────────────────────────────────────
+   kept: true  = business fact stored in the profile (shown on the Confirm screen for returning users)
+   fresh      = asked every time                                              */
+
+const CURRENCIES = ['CAD – Canadian Dollar','USD – US Dollar','EUR – Euro','GBP – British Pound','AUD – Australian Dollar','NZD – New Zealand Dollar','CHF – Swiss Franc','JPY – Japanese Yen','CNY – Chinese Yuan','INR – Indian Rupee','MXN – Mexican Peso','BRL – Brazilian Real','ZAR – South African Rand','AED – UAE Dirham','SGD – Singapore Dollar','HKD – Hong Kong Dollar','SEK – Swedish Krona','NOK – Norwegian Krone','DKK – Danish Krone','KRW – South Korean Won','Other – Name It In The Price Note'];
+const BUYERS  = ['Consumers','Businesses','Both'];
+const RELATE  = ['Never Heard Of Me','Know Me But Have Not Bought','Current Customers','Former Customers'];
+const GOALS   = ['Get Known','Get Attention','Win New Customers','Get People To Try It','Turn Interest Into Sales',
+                 'Sell More To Each Customer','Get Customers To Come Back More Often','Keep The Customers I Have',
+                 'Win Back Lapsed Customers','Get Customers To Spread The Word'];
+const SPEND   = ['Nothing','Under $500','$500 To $5,000','$5,000 To $25,000','$25,000 To $100,000','Over $100,000'];
+/* Spend bands are stored as the US dollar bands the library uses. Labels are shown in the user's currency
+   as approximate equivalents (2 significant figures). Rates are per 1 USD, approximate; review every few months. */
+const RATES = { USD:1, CAD:1.40, EUR:0.92, GBP:0.78, AUD:1.52, NZD:1.65, CHF:0.88, JPY:150, CNY:7.2, INR:85, MXN:18.5, BRL:5.5, ZAR:18, AED:3.67, SGD:1.34, HKD:7.8, SEK:10.5, NOK:10.7, DKK:6.9, KRW:1350 };
+const BAND_EDGES = [500, 5000, 25000, 100000];
+const curCode = () => { const c = (A.currency || '').slice(0, 3); return RATES[c] ? c : 'USD'; };
+const sig2 = x => { const m = Math.pow(10, Math.floor(Math.log10(x)) - 1); return Math.round(x / m) * m; };
+const money = usd => { const c = curCode(); const n = c === 'USD' ? usd : sig2(usd * RATES[c]); return (c === 'USD' ? '$' : c + ' ') + n.toLocaleString('en-US'); };
+function spendLabel(key) {
+  const i = SPEND.indexOf(key);
+  if (i <= 0) return key;                                        // Nothing
+  if (i === 1) return 'Under ' + money(BAND_EDGES[0]);
+  if (i === SPEND.length - 1) return 'Over ' + money(BAND_EDGES[3]);
+  return money(BAND_EDGES[i - 2]) + ' To ' + money(BAND_EDGES[i - 1]);
+}
+function updateSpendLabels() {
+  document.querySelectorAll('input[name="spend"]').forEach(el => { const sp = el.nextElementSibling; if (sp) sp.textContent = spendLabel(el.value); });
+  const note = document.getElementById('spendNote'); if (!note) return;
+  const picked = (A.currency || '').slice(0, 3);
+  note.textContent = RATES[picked] && picked !== 'USD'
+    ? 'Amounts are approximate equivalents in ' + picked + '. The instrument uses the US dollar range behind each choice.'
+    : (picked === 'USD' ? 'Amounts are in US dollars.' : 'Shown in US dollars until you choose a currency above.');
+}
+const DISCOUNT= ['None','A Little (Up To 10%)','Moderate (10% To 30%)','Plenty (Over 30%)'];
+const FIRST   = ['Within Days','Within Weeks','Within Months'];
+const HOURS   = ['Under 2','2 To 5','5 To 15','Over 15'];
+const WHO     = ['Just Me','Me Plus Helpers','A Team'];
+const SIZES   = ['None','Small','Medium','Large'];
+const ASSETS  = ['Email List','Social Following','Website Traffic','Existing Customers','Partners Or Allies','Press Or Media Contacts','Physical Location'];
+const AD_SHARE = ['None','Under A Quarter','A Quarter To Half','More Than Half','Not Sure'];
+const TRACKING = ['Website Tracking','Promo Codes','Ask At Checkout','No Way To Tell'];
+const ADS = ['Search Ads','Social Media Ads','Display Or Banner Ads','Video Or Streaming Ads','Radio Or Podcast Ads','Print Ads','Outdoor Or Billboard Ads','TV Ads','Direct Mail','Sponsorships','Influencer Promotions','Never Advertised'];
+const LIMITS  = ['Regulated Industry','Brand Rules','No Discounting','No Paid Advertising','No Contests Or Giveaways','None Of These'];
+
+const SCREENS = [
+  { id:'offer', title:'What Are You Promoting?', fields:[
+    { key:'offer', type:'textarea', label:'Product Or Service Description', help:'Describe your product or service.', placeholder:'Example: A twelve-week online course that teaches small-business owners to price their services.', required:true },
+    { key:'price', type:'text', label:'Price Of Your Product Or Service', help:'Enter the exact price and any important note.', placeholder:'Example: 390 per year, or 39 per month. First month free.', required:true },
+    { key:'currency', type:'select', label:'Currency', help:'The currency you price in.', options:CURRENCIES, kept:true, required:true },
+    { key:'buyers', type:'single', label:'Who Buys From You?', help:'Describe who buys from you today, then choose the buyer type.', textKey:'buyers_text', textPlaceholder:'Example: Freelance designers and small studios, mostly in North America, who find us through referrals.', options:BUYERS, kept:true, required:true }
+  ]},
+  { id:'reach', title:'Who Do You Want To Reach?', fields:[
+    { key:'reach_text', type:'textarea', label:'Target Customer Segments', help:'Describe the customer segments you want this promotion to reach. You can name more than one.', placeholder:'Example: Freelance designers earning less than they should, and small studios with two to five staff.', required:true },
+    { key:'geo', type:'textarea', label:'Geographic Areas', help:'Where are the customers you want to reach? Name countries, regions or cities.', placeholder:'Example: Canada and the northern United States, with a focus on Ontario.', noneKey:'geo_none', noneLabel:'No Geographic Focus', requiredText:true },
+    { key:'relationship', type:'multi', label:'Their Relationship With You Today', help:'Select all that apply.', options:RELATE, required:true }
+  ]},
+  { id:'goals', title:'What Are Your Main Goals?', fields:[
+    { key:'goals', type:'multi', label:'Your Goals', help:'Select all that apply.', options:GOALS, cols:true, otherKey:'goals_other', otherLabel:'Other (Free Text)', otherHelp:'A goal that is not listed.', requiredAny:true }
+  ]},
+  { id:'budget', title:'Budget And Margin', fields:[
+    { key:'spend', type:'single', label:'Spend Available', help:'What you can put into this promotion.', options:SPEND, display:spendLabel, note:'spendNote', required:true },
+    { key:'ad_share', type:'single', label:'Advertising Budget Share', help:'Optional. How much of your spend could go to paid advertising?', options:AD_SHARE },
+    { key:'discount_room', type:'single', label:'Discount Room', help:'How much you can give away on price and still make money.', options:DISCOUNT, kept:true, required:true }
+  ]},
+  { id:'capacity', title:'Timeline And Capacity', fields:[
+    { key:'first_results', type:'single', label:'First Results Needed', options:FIRST, required:true },
+    { key:'hours', type:'single', label:'Hours Per Week You Can Give It', options:HOURS, kept:true, required:true },
+    { key:'who', type:'single', label:'Who Does The Work?', options:WHO, kept:true, required:true }
+  ]},
+  { id:'assets', title:'Channels And Assets You Have', kept:true, fields:[
+    { key:'assets', type:'assets', label:'What You Have To Work With', help:'Choose a size for each. Choose None if you do not have it.', kept:true, required:true },
+    { key:'attention', type:'textarea', label:'Where Your Customers Spend Attention', help:'Optional. Name the publications, platforms, shows, events or places your customers notice.', placeholder:'Example: Trade magazines, LinkedIn, two industry podcasts, and a yearly conference.' },
+    { key:'tracking', type:'multi', label:'Tracking Ability', help:'Can you tell where a customer came from? Select all that apply.', options:TRACKING, exclusive:'No Way To Tell', required:true }
+  ]},
+  { id:'tried', title:'What Have You Tried Before?', fields:[
+    { key:'tried', type:'textarea', label:'Past Promotions', help:'What you have tried and how it went. Optional detail helps, but you can also say you have tried nothing.', placeholder:'Example: A 20% off weekend sale in March. It sold well but most buyers never returned.', noneKey:'tried_none', noneLabel:'Nothing Yet', requiredText:true },
+    { key:'ads_used', type:'multi', label:'Advertising Experience', help:'Which paid advertising channels have you used? Select all that apply.', options:ADS, cols:true, exclusive:'Never Advertised', otherKey:'ads_notes', otherLabel:'What Happened?', otherHelp:'Optional. Results, such as cost per customer, or what you learned.', required:true }
+  ]},
+  { id:'competitors', title:'What Are Competitors Doing?', fields:[
+    { key:'competitors', type:'textarea', label:'Competitor Promotions', help:'Any promotions your competitors are running that you have noticed.', placeholder:'Example: Two competitors give a free first month. One runs a referral program.', noneKey:'competitors_none', noneLabel:'Unsure', requiredText:true }
+  ]},
+  { id:'limits', title:'Your Constraints And Limits', kept:true, fields:[
+    { key:'limits', type:'multi', label:'Anything We Should Avoid', help:'Select all that apply.', options:LIMITS, cols:true, exclusive:'None Of These', otherKey:'limits_other', otherLabel:'Other (Free Text)', otherHelp:'Another limit, such as a rule you must follow.', kept:true, requiredAny:true }
+  ]}
+];
+
+/* ── Live connection ─────────────────────────────────────────────── */
+const API = 'https://wljxufilyobwpbavvwsr.supabase.co/functions/v1/promotions';
+const VALIDATE_API = 'https://wljxufilyobwpbavvwsr.supabase.co/functions/v1/bm-trial-validate';
+const TOKEN_KEYS = ['bm_token', 'bmToken', 'bm-token', 'quvivant_token', 'token'];
+function getToken() {
+  try { const t = new URLSearchParams(location.search).get('token'); if (t) { try { sessionStorage.setItem('bm_token', t); } catch (e) {} return t; } } catch (e) {}
+  for (const name of ['sessionStorage', 'localStorage']) {
+    for (const k of TOKEN_KEYS) { try { const v = window[name].getItem(k); if (v) return v; } catch (e) {} }
+  }
+  return '';
+}
+let TOKEN = '';
+class ApiError extends Error { constructor(code, status) { super(code); this.code = code; this.status = status; } }
+async function api(command, fields) {
+  let res;
+  try { res = await fetch(API, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(Object.assign({ token:TOKEN, command }, fields || {})) }); }
+  catch (e) { throw new ApiError('network', 0); }
+  let data = null; try { data = await res.json(); } catch (e) {}
+  if (!res.ok) throw new ApiError((data && data.error) || 'server_error', res.status);
+  return data;
+}
+function errText(code) {
+  const m = {
+    network: 'The connection dropped. Check your connection and try again.',
+    trial_exhausted: 'Your free sessions are used. Return to the Suite Index to subscribe and keep planning.',
+    fair_use_limit: 'You have reached the number of briefs available in one day. Please try again tomorrow.',
+    incomplete: 'The brief did not finish writing. No session was used. Please try again.',
+    followup_window_closed: 'Follow-up questions are no longer open for this brief.',
+    brief_exists: 'This brief has already been written. Open it from Previous Briefs.',
+    invalid_token: 'This access link is not recognised.'
+  };
+  return m[code] || 'Something went wrong on our side. No session was used. Please try again.';
+}
+
+/* ── State ──────────────────────────────────────────────────────── */
+const blankAssets = () => Object.fromEntries(ASSETS.map(a => [a,'None']));
+let PROFILE = null;  // saved business profile from the server, or null for a first-time user
+let PREFILL = null;  // offer and price from the last promotion
+let returning = false;
+let A = {};          // current answers
+let KEPT0 = {};      // kept answers as loaded, to detect edits
+let B = null;        // the brief on screen: { runId, parts, assessments, dateLabel, custom }
+let RUN = null;      // run id of the brief being planned
+let L2Q = [];        // the six custom questions
+let L2HEAD = '', L2DESC = '';
+let ERR = null;      // { msg, back, retry }
+let HIST = [];
+let stage = 'init';  // init, access, l1, loading, l2, briefLoading, brief, history, error
+let L2 = {};         // answers to the custom questions, keyed q1..q6
+let extra = '';      // optional Anything Else We Should Know text
+let saveToProfile = false;
+
+function resetState() {
+  A = { offer:'', price:'', currency:'', buyers:'', buyers_text:'', reach_text:'', geo:'', geo_none:false, relationship:[], goals:[], goals_other:'', spend:'', discount_room:'',
+        first_results:'', hours:'', who:'', assets:blankAssets(), assets_touched:false, tried:'', tried_none:false, competitors:'', competitors_none:false,
+        limits:[], limits_other:'', ad_share:'', attention:'', tracking:[], ads_used:[], ads_notes:'' };
+  if (returning && PROFILE) {
+    const p = PROFILE;
+    A.currency = p.currency || ''; A.buyers = p.buyers || ''; A.buyers_text = p.buyers_text || ''; A.hours = p.hours_per_week || ''; A.who = p.who_does_work || '';
+    A.assets = Object.assign(blankAssets(), p.assets || {}); A.assets_touched = true; A.discount_room = p.discount_room || '';
+    A.limits = Array.isArray(p.constraints) ? p.constraints.slice() : []; A.limits_other = p.constraints_other || '';
+  }
+  if (returning && PREFILL) { A.offer = PREFILL.offer || ''; A.price = PREFILL.price || ''; }   // prefilled from the last promotion
+  KEPT0 = JSON.parse(JSON.stringify(pickKept(A)));
+  saveToProfile = false; L2 = {}; extra = '';
+}
+function pickKept(a) { return { currency:a.currency, buyers:a.buyers, buyers_text:a.buyers_text, hours:a.hours, who:a.who, assets:a.assets, discount_room:a.discount_room, limits:a.limits, limits_other:a.limits_other }; }
+const keptChanged = () => JSON.stringify(pickKept(A)) !== JSON.stringify(KEPT0);
+const fmtDate = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); };
+const assetsConfirmedText = () => (PROFILE && PROFILE.assets_confirmed_at) ? fmtDate(PROFILE.assets_confirmed_at) : 'your last visit';
+function startFresh() { returning = !!PROFILE; B = null; RUN = null; resetState(); stage = 'l1'; render(); }
+
+const $ = sel => document.querySelector(sel);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const qNum = s => SCREENS.findIndex(x => x.id === s.id) + 1;
+const allFields = () => SCREENS.flatMap(s => s.fields.map(f => ({ f, s })));
+
+const withTags = set => set.map((x, i) => fieldHtml(x.f, x.s, i === 0 || set[i - 1].s.id !== x.s.id)).join('');
+
+/* One page: all nine questions. Returning users see their saved profile answers first. */
+function renderL1() {
+  const keptSet = allFields().filter(x => x.f.kept);
+  const freshSet = allFields().filter(x => !(returning && x.f.kept));
+  let body = `<div class="intake-header"><span class="intake-layer-tag">Layer 1 · Nine Questions</span>
+    <div class="intake-headline">${returning ? 'Confirm Your Profile, Then Plan A Promotion Strategy' : 'Plan A Promotion Strategy'}</div>
+    <div class="intake-desc">These nine questions let the instrument understand your situation and generate six questions tailored to you. All nine are required.</div></div>`;
+  if (returning) {
+    body += `<div class="intake-header" style="margin-top:8px"><span class="intake-layer-tag">Your Business Profile</span>
+      <div class="intake-desc">Saved from last time. Change anything that is out of date. Channels and assets last confirmed ${esc(assetsConfirmedText())}.</div></div>` +
+      withTags(keptSet) +
+      (keptChanged() ? `<div class="q-block"><label class="save-note check-line"><input type="checkbox" id="saveProfile" ${saveToProfile ? 'checked' : ''}> Save These Changes To My Profile</label>
+        <p class="q-help" style="margin:10px 0 0">If you leave this unchecked, the changes apply to this promotion only.</p></div>` : '') +
+      `<div class="intake-header" style="margin-top:34px"><span class="intake-layer-tag">This Promotion</span></div>`;
+  }
+  body += withTags(freshSet);
+  body += `<div class="nav-row">
+      <button type="button" class="btn-primary" id="nextBtn">Generate Custom Questions →</button>
+      <span class="nav-hint" id="navMsg"></span></div>`;
+  $('#panel').innerHTML = body;
+  bind();
+  updateSpendLabels();
+  validate();
+}
+
+function fieldHtml(f, scr, showNum) {
+  const id = 'f_' + f.key;
+  let h = `<div class="q-block"><div class="q-label">${showNum ? `<span class="q-num">Q${qNum(scr)} · ${esc(scr.title)}</span>` : ''}<span class="q-tier">${f.kept && returning ? 'From Your Profile' : 'Required'}</span></div><label class="q-text" for="${id}" style="display:block">${esc(f.label)}</label>`;
+  if (f.help) h += `<div class="q-help">${esc(f.help)}</div>`;
+  if (f.type === 'textarea') {
+    h += `<textarea class="q-textarea" id="${id}" data-key="${f.key}" placeholder="${esc(f.placeholder || '')}" ${f.noneKey && A[f.noneKey] ? 'disabled' : ''}>${esc(A[f.key] || '')}</textarea>`;
+    if (f.noneKey) h += `<label class="check-line"><input type="checkbox" data-none="${f.noneKey}" data-for="${f.key}" ${A[f.noneKey] ? 'checked' : ''}> ${esc(f.noneLabel)}</label>`;
+  } else if (f.type === 'text') {
+    h += `<input type="text" id="${id}" data-key="${f.key}" placeholder="${esc(f.placeholder || '')}" value="${esc(A[f.key] || '')}">`;
+  } else if (f.type === 'select') {
+    h += `<select class="q-select" id="${id}" data-key="${f.key}"><option value="">Choose A Currency</option>` + f.options.map(o => `<option value="${esc(o)}" ${A[f.key] === o ? 'selected' : ''}>${esc(o)}</option>`).join('') + '</select>';
+  } else if (f.type === 'single') {
+    if (f.textKey) h += `<textarea class="q-textarea" id="t_${f.textKey}" data-key="${f.textKey}" placeholder="${esc(f.textPlaceholder || '')}" style="margin-bottom:14px">${esc(A[f.textKey] || '')}</textarea>`;
+    h += `<div class="choices" role="radiogroup" aria-label="${esc(f.label)}">` + f.options.map(o =>
+      `<label class="choice"><input type="radio" name="${f.key}" value="${esc(o)}" data-key="${f.key}" ${A[f.key] === o ? 'checked' : ''}><span>${esc(f.display ? f.display(o) : o)}</span></label>`).join('') + '</div>' + (f.note ? `<div class="q-help" id="${f.note}" style="font-size:16px;margin:12px 0 0"></div>` : '');
+  } else if (f.type === 'multi') {
+    h += `<div class="choices ${f.cols ? 'cols' : ''}">` + f.options.map(o =>
+      `<label class="choice"><input type="checkbox" value="${esc(o)}" data-multi="${f.key}" ${A[f.key].includes(o) ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('') + '</div>';
+    if (f.otherKey) h += `<div class="other-row"><label for="o_${f.otherKey}">${esc(f.otherLabel)} – ${esc(f.otherHelp)}</label><input type="text" id="o_${f.otherKey}" data-key="${f.otherKey}" value="${esc(A[f.otherKey] || '')}"></div>`;
+  } else if (f.type === 'assets') {
+    h += ASSETS.map(a => `<div class="asset-row"><div class="asset-name">${esc(a)}</div><div class="choices" role="radiogroup" aria-label="${esc(a)}">` +
+      SIZES.map(sz => `<label class="choice"><input type="radio" name="asset_${esc(a)}" value="${sz}" data-asset="${esc(a)}" ${A.assets[a] === sz ? 'checked' : ''}><span>${sz}</span></label>`).join('') + '</div></div>').join('');
+  }
+  return h + '</div>';
+}
+
+function bind() {
+  const panel = $('#panel');
+  panel.querySelectorAll('[data-key]').forEach(el => {
+    const ev = (el.type === 'radio' || el.tagName === 'SELECT') ? 'change' : 'input';
+    el.addEventListener(ev, () => { A[el.dataset.key] = el.value; refresh(); });
+  });
+  panel.querySelectorAll('[data-multi]').forEach(el => el.addEventListener('change', () => {
+    const k = el.dataset.multi; const f = findField(k);
+    let arr = A[k].filter(v => v !== el.value);
+    if (el.checked) {
+      arr.push(el.value);
+      if (f.exclusive) arr = el.value === f.exclusive ? [el.value] : arr.filter(v => v !== f.exclusive);
+    }
+    A[k] = arr;
+    if (f.exclusive) panel.querySelectorAll(`[data-multi="${k}"]`).forEach(c => { c.checked = arr.includes(c.value); });
+    refresh();
+  }));
+  panel.querySelectorAll('[data-asset]').forEach(el => el.addEventListener('click', () => { A.assets[el.dataset.asset] = el.value; A.assets_touched = true; refresh(); }));
+  panel.querySelectorAll('[data-none]').forEach(el => el.addEventListener('change', () => {
+    A[el.dataset.none] = el.checked;
+    const ta = panel.querySelector(`#f_${el.dataset.for}`); ta.disabled = el.checked;
+    if (el.checked) { A[el.dataset.for] = ''; ta.value = ''; }
+    refresh();
+  }));
+  const sp = $('#saveProfile'); if (sp) sp.addEventListener('change', () => { saveToProfile = sp.checked; });
+  $('#nextBtn').addEventListener('click', () => { if (!$('#nextBtn').disabled) goL2(); });
+}
+function refresh() {
+  // the Save checkbox appears only after a kept answer changes
+  if (returning) {
+    const had = !!$('#saveProfile'), now = keptChanged();
+    if (had !== now) { const y = window.scrollY; render(); window.scrollTo(0, y); return; }
+  }
+  updateSpendLabels();
+  validate();
+}
+function findField(k) { return SCREENS.flatMap(s => s.fields).find(f => f.key === k); }
+
+function fieldOk(f) {
+  if (f.type === 'textarea') {
+    if (f.noneKey && A[f.noneKey]) return true;
+    return !f.required && !f.requiredText ? true : A[f.key].trim().length > 0;
+  }
+  if (f.type === 'text' || f.type === 'select') return !f.required || A[f.key].trim().length > 0;
+  if (f.type === 'single') return (!f.required || !!A[f.key]) && (!f.textKey || A[f.textKey].trim().length > 0);
+  if (f.type === 'multi') return (!f.required && !f.requiredAny) || A[f.key].length > 0 || (f.otherKey && A[f.otherKey].trim().length > 0);
+  return A.assets_touched; // assets default to None, so the user must answer at least one row
+}
+function validate() {
+  const btn = $('#nextBtn'); if (!btn) return;
+  const done = SCREENS.filter(s => s.fields.every(fieldOk)).length;
+  btn.disabled = done !== SCREENS.length;
+  $('#navMsg').textContent = done + ' / ' + SCREENS.length + ' answered';
+  $('#progressBar').style.width = Math.round(done / SCREENS.length * 100) + '%';
+  $('#progressLabel').textContent = 'Layer 1 of 2 · ' + done + ' of ' + SCREENS.length + ' answered';
+}
+
+/* ── Layer 2: six custom questions, written by the instrument for this user ── */
+function intakePayload() {
+  const tried = (A.tried_none ? 'Nothing Yet' : A.tried) + (A.ads_notes && A.ads_notes.trim() ? '\nAdvertising results: ' + A.ads_notes.trim() : '');
+  return { offer:A.offer, price:A.price, currency:A.currency, buyers:A.buyers, buyers_text:A.buyers_text, reach_text:A.reach_text,
+    geo:A.geo_none ? 'No Geographic Focus' : A.geo, relationship:A.relationship, goals:A.goals, goals_other:A.goals_other, spend:A.spend, ad_share:A.ad_share,
+    discount_room:A.discount_room, first_results:A.first_results, hours:A.hours, who:A.who, assets:A.assets, attention:A.attention, tracking:A.tracking,
+    tried, ads_used:A.ads_used, competitors:A.competitors_none ? 'Unsure' : A.competitors, limits:A.limits, limits_other:A.limits_other };
+}
+function fromProfileKeys() {
+  if (!returning || !PROFILE) return [];
+  return ['currency','buyers','hours','who','assets','discount_room','limits'].filter(k => JSON.stringify(A[k]) === JSON.stringify(KEPT0[k]));
+}
+async function saveProfileStep() {
+  const kept = pickKept(A);
+  try {
+    if (!PROFILE || (saveToProfile && keptChanged())) {
+      await api('SAVE_PROFILE', { profile:kept });
+      PROFILE = { currency:kept.currency, buyers:kept.buyers, buyers_text:kept.buyers_text, hours_per_week:kept.hours, who_does_work:kept.who, assets:kept.assets,
+                  discount_room:kept.discount_room, constraints:kept.limits, constraints_other:kept.limits_other, assets_confirmed_at:new Date().toISOString() };
+    } else {
+      await api('CONFIRM_ASSETS');
+      PROFILE.assets_confirmed_at = new Date().toISOString();
+    }
+  } catch (e) { if (e.code === 'invalid_token') throw e; /* the profile is a convenience; planning goes on */ }
+}
+function showError(e, back, retry) { ERR = { msg:errText(e && e.code), back, retry }; if (e && e.code === 'invalid_token') { stage = 'access'; render(); return; } stage = 'error'; render(); }
+async function goL2() {
+  stage = 'loading'; render();
+  try {
+    await saveProfileStep();
+    const r = await api('GENERATE_LAYER2', { intake:intakePayload(), from_profile:fromProfileKeys() });
+    RUN = r.run_id; L2Q = r.questions || []; L2HEAD = r.layer2Headline || 'Six Questions Chosen For Your Situation'; L2DESC = r.layer2Desc || ''; L2 = {};
+    PREFILL = { offer:A.offer, price:A.price };
+    stage = 'l2';
+  } catch (e) { return showError(e, 'l1', goL2); }
+  render();
+}
+
+/* ── Brief: streamed from the instrument, then saved with the user's record ── */
+function phaseOf(text) {
+  const heads = text.match(/^# .+$/gm); if (!heads) return 'Starting your brief';
+  const h = heads[heads.length - 1].replace(/^# /, '');
+  const m = h.match(/Priority #(\d)/);
+  if (m) return 'Writing Priority #' + m[1];
+  return 'Writing ' + h.replace('Recommended ', '');
+}
+function updateProgress(full) {
+  const words = full.trim() ? full.trim().split(/\s+/).length : 0;
+  const w = document.getElementById('bw'), p = document.getElementById('bp');
+  if (w) w.textContent = words.toLocaleString('en-US') + ' words written';
+  if (p) p.textContent = phaseOf(full);
+  $('#progressBar').style.width = (50 + Math.min(50, Math.round(words / 6000 * 50))) + '%';
+}
+const splitParts = md => md.trim().split(/\n\s*---\s*\n/).map(p => p.trim()).filter(Boolean);
+async function goBrief() {
+  stage = 'briefLoading'; render();
+  const answers = L2Q.map((q, i) => (L2['q' + (i + 1)] || '').trim());
+  const custom = answers.filter(Boolean).length;
+  try {
+    const res = await fetch(API, { method:'POST', headers:{ 'Content-Type':'application/json' },
+      body:JSON.stringify({ token:TOKEN, command:'GENERATE_BRIEF', run_id:RUN, layer2_answers:answers, additional_context:extra }) });
+    if (!res.ok || !((res.headers.get('content-type') || '').includes('text/event-stream'))) {
+      let d = null; try { d = await res.json(); } catch (x) {}
+      throw new ApiError((d && d.error) || 'server_error', res.status);
+    }
+    const reader = res.body.getReader(), dec = new TextDecoder(); let buf = '', full = '', done = null;
+    while (true) {
+      const { done:fin, value } = await reader.read(); if (fin) break;
+      buf += dec.decode(value, { stream:true });
+      let i;
+      while ((i = buf.indexOf('\n\n')) >= 0) {
+        const chunk = buf.slice(0, i); buf = buf.slice(i + 2);
+        const line = chunk.split('\n').find(l => l.startsWith('data:')); if (!line) continue;
+        let ev; try { ev = JSON.parse(line.slice(5).trim()); } catch (x) { continue; }
+        if (ev.error) throw new ApiError(ev.error, 200);
+        if (ev.t) { full += ev.t; updateProgress(full); }
+        if (ev.done) done = ev;
+      }
+    }
+    if (!done) throw new ApiError('incomplete', 200);
+    B = { runId:done.run_id, parts:splitParts(full), assessments:{}, pending:{}, dateLabel:null, custom, total:L2Q.length };
+    if (done.session) showBadge(done.session);
+    stage = 'brief';
+  } catch (e) { return showError(e, 'l2', goBrief); }
+  render();
+}
+
+/* ── Sessions badge ─────────────────────────────────────────────── */
+function showBadge(s) {
+  const b = $('#bm-trial-badge'); if (!b || !s) return;
+  b.textContent = s.status === 'subscribed' ? 'Subscribed' : (s.uses_remaining + (s.uses_remaining === 1 ? ' Session Left' : ' Sessions Left'));
+  b.classList.add('show');
+}
+async function peekBadge() {
+  try { const r = await fetch(VALIDATE_API, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ token:TOKEN, peek:true }) }); if (r.ok) showBadge(await r.json()); } catch (e) {}
+}
+
+/* ── Output screen: one column, one card per section (Market Gaps pattern) ── */
+const SECTION_NAV = [['Priority #1','sec1'],['Priority #2','sec2'],['Priority #3','sec3'],['Lower Priority Tactics','secLower'],['Set Aside Tactics','secAside'],['Guardrail Check','secGuard'],['Situation Summary','secSit']];
+function topOfPage() { window.scrollTo({ top:0, behavior:'smooth' }); }
+function copyText(btn, txt) { try { navigator.clipboard.writeText(txt).then(() => { btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = 'Copy'; }, 2000); }); } catch (x) {} }
+function newBrief() { if (confirm('Start a new brief? Your current brief stays saved under Previous Briefs.')) startFresh(); }
+function printBox(box) { document.body.classList.add('print-one'); box.classList.add('print-this'); window.print(); box.classList.remove('print-this'); document.body.classList.remove('print-one'); }
+const plain = md => md.replace(/^#{1,3} /gm, '');
+function renderBrief() {
+  $('#progressBar').style.width = '100%';
+  $('#progressLabel').textContent = '';
+  const parts = B.parts;
+  const label = B.custom != null ? `Questions Answered – Standard: 9 of 9 · Custom: ${B.custom} of ${B.total}` : '';
+  $('#panel').innerHTML = `<div id="briefMain">
+    <div class="intake-notice" style="margin:0 0 22px">${B.dateLabel ? 'This is your Promotions Brief from ' + esc(B.dateLabel) + '.' : 'Your Promotions Brief is ready.'} Review your three ranked Promotional Tactic Priorities, explained in full. Lead with the one most likely to deliver your goals. This response then follows below with Lower Priority Recommended Tactics, Tactics Considered And Set Aside, the Guardrail Check and the Situation Summary.</div>
+    <div class="output-meta">${B.dateLabel ? '<button class="nav-btn" id="backHistory">← Previous Briefs</button>' : ''}${SECTION_NAV.map(n => `<button class="nav-btn" data-target="${n[1]}">${n[0]}</button>`).join('')}<span class="output-completeness" style="margin-left:auto">${label}</span></div>
+    <div id="briefBoxes"></div>
+    <div class="entire-row"><span class="lbl">Entire Promotions Brief:</span><div class="grp"><button class="nav-btn" id="allCopy">Copy</button><button class="nav-btn" id="allPdf">Save As PDF</button><button class="nav-btn" id="allNew">New Brief</button></div></div>
+    <div class="output-followup"><span class="followup-label">Follow-Up: Ask The Instrument A Specific Question About Your Brief</span>
+      <div class="followup-input-wrap"><input type="text" class="followup-input" id="followupInput" placeholder="e.g. Which of these should I start with, and why?" /><button class="btn-primary" id="followupBtn">Ask →</button></div><div id="followupThread"></div></div>
+    </div>
+    <div id="fullerView" style="display:none"></div>`;
+  const tops = parts.slice(0, 3).map(p => { let i = 0; return p.replace(/^### /gm, () => String.fromCharCode(65 + i++) + '. '); });
+  const lettered = tops.map(p => p.replace(/^(?:[A-Z]\. )/gm, '### $&'));
+  const ids = ['sec1','sec2','sec3'];
+  tops.forEach((part, idx) => {
+    const box = document.createElement('div'); box.className = 'brief-body'; box.id = ids[idx];
+    box.innerHTML = marked.parse(lettered[idx]);
+    const bar = document.createElement('div'); bar.className = 'box-actions';
+    bar.innerHTML = '<button class="nav-btn box-top">Top Of Page</button><div class="grp"><button class="nav-btn box-copy">Copy</button><button class="nav-btn box-pdf">Save As PDF</button><button class="nav-btn box-new">New Brief</button></div>';
+    box.appendChild(bar); $('#briefBoxes').appendChild(box);
+    bar.querySelector('.box-copy').addEventListener('click', e => copyText(e.target, part));
+    bar.querySelector('.box-new').addEventListener('click', newBrief);
+    bar.querySelector('.box-pdf').addEventListener('click', () => printBox(box));
+    bar.querySelector('.box-top').addEventListener('click', topOfPage);
+  });
+  const extraIds = ['secLower','secAside','secGuard','secSit'];
+  const extras = parts.slice(3);
+  extras.forEach((part, idx) => {
+    const box = document.createElement('div'); box.className = 'brief-body'; box.id = extraIds[idx]; box.innerHTML = marked.parse(part);
+    if (idx === 0) {
+      box.querySelectorAll('h3').forEach((h, k) => {
+        const name = h.textContent.trim();
+        const row = document.createElement('div'); row.className = 'hrow'; h.parentNode.insertBefore(row, h); row.appendChild(h);
+        const b = document.createElement('button'); b.className = 'nav-btn'; b.textContent = 'Fuller Assessment →'; b.addEventListener('click', () => openFuller(k + 1, name)); row.appendChild(b);
+      });
+    }
+    const bar = document.createElement('div'); bar.className = 'box-actions';
+    bar.innerHTML = idx === 0 ? '<button class="nav-btn box-top">Top Of Page</button><div class="grp"><button class="nav-btn box-copy">Copy</button><button class="nav-btn box-pdf">Save As PDF</button><button class="nav-btn box-new">New Brief</button></div>' : '<button class="nav-btn box-top">Top Of Page</button>';
+    box.appendChild(bar);
+    bar.querySelector('.box-top').addEventListener('click', topOfPage);
+    if (idx === 0) {
+      bar.querySelector('.box-copy').addEventListener('click', e => copyText(e.target, part));
+      bar.querySelector('.box-new').addEventListener('click', newBrief);
+      bar.querySelector('.box-pdf').addEventListener('click', () => printBox(box));
+    }
+    $('#briefBoxes').appendChild(box);
+  });
+  if (B.dateLabel) $('#backHistory').addEventListener('click', () => { stage = 'history'; render(); });
+  document.querySelectorAll('.nav-btn[data-target]').forEach(btn => btn.addEventListener('click', () => { const el = document.getElementById(btn.dataset.target); if (el) el.scrollIntoView({ behavior:'smooth', block:'start' }); }));
+  $('#allCopy').addEventListener('click', e => copyText(e.target, tops.concat(extras).join('\n\n---\n\n')));
+  $('#allPdf').addEventListener('click', () => window.print());
+  $('#allNew').addEventListener('click', newBrief);
+  const ask = async () => {
+    const q = $('#followupInput'), btn = $('#followupBtn'); const text = q.value.trim(); if (!text || btn.disabled) return;
+    btn.disabled = true; q.value = '';
+    const el = document.createElement('div'); el.className = 'thread-entry';
+    const qq = document.createElement('div'); qq.style.cssText = 'font-family:var(--sans);font-size:14px;color:var(--accent-hi);margin-bottom:8px'; qq.textContent = text;
+    const aa = document.createElement('div'); aa.textContent = 'Thinking…'; el.appendChild(qq); el.appendChild(aa); $('#followupThread').appendChild(el);
+    try { const r = await api('FOLLOW_UP', { run_id:B.runId, question:text }); aa.innerHTML = marked.parse(r.answer || ''); }
+    catch (e) { aa.textContent = errText(e.code); }
+    btn.disabled = false;
+  };
+  $('#followupBtn').addEventListener('click', ask);
+  $('#followupInput').addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
+  window.scrollTo(0, 0);
+}
+
+/* ── Fuller Assessment: its own call, opened in a new window, saved with the brief ── */
+function getAssessment(slot) {
+  if (B.assessments[slot]) return Promise.resolve(B.assessments[slot]);
+  if (!B.pending[slot]) {
+    B.pending[slot] = api('GENERATE_ASSESSMENT', { run_id:B.runId, slot }).then(r => { B.assessments[slot] = { tactic_name:r.tactic_name, content:r.content }; delete B.pending[slot]; return B.assessments[slot]; })
+      .catch(e => { delete B.pending[slot]; throw e; });
+  }
+  return B.pending[slot];
+}
+const CHILD_CSS = `:root{--accent:#A78BFA;--accent-hi:#C4B5FD;--accent-deep:#4B3A94;--accent-lite:rgba(167,139,250,0.13);--accent-line:rgba(167,139,250,0.45);--bg:#042C53;--card-dark:#090912;--border:#2b2b44;--border-act:#7a68c4;--text:#f0f0fa;--text-mid:#c4c4dc;--text-dim:#9a9ac0;--white:#f8f8ff;--gold:#f0c040;--serif:serif;--sans:sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--serif);font-size:18px;line-height:1.65}
+.site-header{padding:18px 32px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#111120 0%,var(--bg) 100%)}.brand-mark{font-family:var(--sans);font-size:18px;letter-spacing:1.5px;color:var(--gold)}
+.main{max-width:820px;margin:0 auto;padding:24px 24px 60px}
+.output-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border)}.output-completeness{font-family:var(--sans);font-size:14px;color:var(--text-dim)}
+.nav-btn{white-space:nowrap;flex-shrink:0;font-family:var(--sans);font-size:14px;color:var(--accent-hi);background:var(--accent-lite);border:1px solid var(--accent-line);border-radius:4px;padding:5px 12px;cursor:pointer}.nav-btn:hover{color:var(--white);border-color:var(--border-act)}
+.brief-body{font-family:var(--serif);background:var(--card-dark);border:1px solid rgba(196,181,253,0.5);border-radius:8px;padding:36px 42px;word-wrap:break-word}
+.brief-body h1{font-size:27px;font-weight:400;color:#ddd8f5;margin:0 0 6px;line-height:1.2}.brief-body h2{font-size:23px;font-weight:400;color:var(--accent);margin:0 0 22px;padding-bottom:12px;border-bottom:1px solid var(--accent-line)}
+.brief-body h3{font-size:23px;font-weight:400;color:#d9ceff;margin:32px 0 12px}.brief-body p{font-size:21px;color:#c5c5dc;line-height:1.75;margin-bottom:18px}
+.brief-body ul{padding-left:26px;margin-bottom:14px}.brief-body li{font-size:19px;color:#babad3;line-height:1.6;margin-bottom:8px}.brief-body strong{color:#d6d4ec;font-weight:600}.brief-body em{color:#b2b2cc}
+.box-actions{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:34px;padding-top:20px;border-top:1px solid var(--accent-line)}.grp{display:flex;gap:8px}
+.loading-wrap{text-align:center;padding:64px 20px}.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 22px}@keyframes spin{to{transform:rotate(360deg)}}
+.loading-label{font-size:22px;color:var(--accent-hi)}.loading-sub{font-family:var(--sans);font-size:15px;color:var(--text-dim);margin-top:10px}
+.site-footer{text-align:center;padding:16px;font-family:var(--sans);font-size:13px;color:var(--text-dim);border-top:1px solid var(--border)}
+@media (prefers-reduced-motion:reduce){.loading-spinner{animation:none}}@media print{.output-meta,.box-actions,.site-footer{display:none!important}}`;
+const FOOT = 'QuVivant Business Clarity · Promotions Instrument · Promotional Marketing Intelligence';
+function childDoc(title, bodyHtml, script) {
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${esc(title)}</title><style>${CHILD_CSS}</style></head><body><header class="site-header"><div class="brand-mark">QuVivant Business Clarity</div></header><main class="main">${bodyHtml}</main><footer class="site-footer">${FOOT}</footer>${script ? '<script>' + script + '<\/script>' : ''}</body></html>`;
+}
+function writeChild(w, html) { try { w.document.open(); w.document.write(html); w.document.close(); } catch (e) {} }
+function fullerLoadingPage(w, name) {
+  writeChild(w, childDoc('Fuller Assessment – ' + name, `<div class="loading-wrap"><div class="loading-spinner"></div><div class="loading-label">Writing Your Fuller Assessment</div><div class="loading-sub">${esc(name)}. This takes up to a minute. Keep this window open.</div></div>`));
+}
+function fullerErrorPage(w, name, msg) {
+  writeChild(w, childDoc('Fuller Assessment – ' + name, `<div class="output-meta"><span class="output-completeness">Fuller Assessment</span><span style="margin-left:auto"></span><button class="nav-btn" id="cl">Close Window</button></div><div class="brief-body"><p>${esc(msg)}</p></div>`, `document.getElementById('cl').onclick=function(){window.close()};`));
+}
+function fullerPage(w, a) {
+  const md = a.content;
+  const body = `<div class="output-meta"><span class="output-completeness">Fuller Assessment</span><span style="margin-left:auto"></span><button class="nav-btn close">Close Window</button></div>
+    <div class="brief-body">${marked.parse(md)}<div class="box-actions"><button class="nav-btn" id="top">Top Of Page</button><div class="grp"><button class="nav-btn" id="copy">Copy</button><button class="nav-btn" id="pdf">Save As PDF</button><button class="nav-btn close">Close Window</button></div></div></div>`;
+  const script = `var MD=${JSON.stringify(plain(md)).replace(/</g, '\\u003c')};
+document.getElementById('top').onclick=function(){window.scrollTo({top:0,behavior:'smooth'})};
+document.getElementById('copy').onclick=function(e){try{navigator.clipboard.writeText(MD).then(function(){e.target.textContent='Copied';setTimeout(function(){e.target.textContent='Copy'},2000)})}catch(x){}};
+document.getElementById('pdf').onclick=function(){window.print()};
+Array.prototype.forEach.call(document.querySelectorAll('.close'),function(b){b.onclick=function(){window.close()}});`;
+  writeChild(w, childDoc('Fuller Assessment – ' + a.tactic_name, body, script));
+}
+async function openFuller(slot, name) {
+  const w = window.open('', '_blank');   // opened inside the click so the browser allows it
+  if (w) fullerLoadingPage(w, name);
+  else { savedScroll = window.scrollY; $('#briefMain').style.display = 'none'; const v = $('#fullerView'); v.style.display = 'block'; v.innerHTML = '<div class="loading-wrap"><div class="loading-spinner"></div><div class="loading-label">Writing Your Fuller Assessment</div><div class="loading-sub">' + esc(name) + '. This takes up to a minute.</div></div>'; window.scrollTo(0, 0); }
+  try {
+    const a = await getAssessment(slot);
+    if (w) { if (!w.closed) fullerPage(w, a); } else showFullerInPage(a);
+  } catch (e) {
+    if (w) { if (!w.closed) fullerErrorPage(w, name, errText(e.code)); } else { backToBrief(); alert(errText(e.code)); }
+  }
+}
+/* Fallback when the browser blocks the new window: show the assessment on this page */
+let savedScroll = 0;
+function showFullerInPage(a) {
+  const v = $('#fullerView'); v.style.display = 'block'; $('#briefMain').style.display = 'none';
+  v.innerHTML = '<div class="output-meta"><button class="nav-btn" id="fvBackTop">Back To Brief</button><span class="output-completeness">Fuller Assessment</span></div><div class="brief-body" id="fvBox"></div>';
+  const box = $('#fvBox'); box.innerHTML = marked.parse(a.content);
+  const bar = document.createElement('div'); bar.className = 'box-actions';
+  bar.innerHTML = '<button class="nav-btn fv-top">Top Of Page</button><div class="grp"><button class="nav-btn fv-copy">Copy</button><button class="nav-btn fv-pdf">Save As PDF</button><button class="nav-btn fv-back">Back To Brief</button></div>';
+  box.appendChild(bar);
+  bar.querySelector('.fv-copy').addEventListener('click', e => copyText(e.target, plain(a.content)));
+  bar.querySelector('.fv-back').addEventListener('click', backToBrief);
+  bar.querySelector('.fv-pdf').addEventListener('click', () => window.print());
+  bar.querySelector('.fv-top').addEventListener('click', topOfPage);
+  $('#fvBackTop').addEventListener('click', backToBrief);
+  window.scrollTo(0, 0);
+}
+function backToBrief() { $('#fullerView').style.display = 'none'; $('#briefMain').style.display = 'block'; window.scrollTo(0, savedScroll); }
+
+/* ── Previous Briefs: the user's saved record ── */
+async function renderHistory() {
+  $('#progressBar').style.width = '100%'; $('#progressLabel').textContent = '';
+  $('#panel').innerHTML = `<div class="loading-wrap"><div class="loading-spinner"></div><div class="loading-label">Opening Your Previous Briefs</div></div>`;
+  window.scrollTo(0, 0);
+  try { HIST = (await api('LIST_BRIEFS')).briefs || []; }
+  catch (e) { return showError(e, returning || B ? 'l1' : 'l1', renderHistory); }
+  if (stage !== 'history') return;
+  const empty = !HIST.length;
+  $('#panel').innerHTML = `<div class="intake-notice" style="margin:0 0 22px">${empty ? 'You have no saved briefs yet. Each brief you write is saved here, with every Fuller Assessment you open, so you can read it again later.' : 'Your Previous Briefs, newest first. Open any brief to read it again exactly as it was written, including every Fuller Assessment you have opened.'}</div>
+    <div class="output-meta"><button class="nav-btn" id="histNew">New Brief</button><span class="output-completeness" style="margin-left:auto">Saved Briefs: ${HIST.length}</span></div>
+    <div id="histList"></div>`;
+  HIST.forEach(h => {
+    const box = document.createElement('div'); box.className = 'brief-body hist-box';
+    box.innerHTML = `<h2 style="margin:0 0 18px; border:none; padding:0">${esc(fmtDate(h.created_at))}</h2>` + (h.top_tactics || []).map((t, k) => `<p style="margin-bottom:8px"><strong>Priority #${k + 1}.</strong> ${esc(t)}</p>`).join('') + `<p style="margin:18px 0 0; font-size:17px">Fuller Assessments Saved: ${h.assessments_saved || 0}</p><div class="box-actions"><span></span><div class="grp"><button class="nav-btn hist-open">Open Brief →</button></div></div>`;
+    box.querySelector('.hist-open').addEventListener('click', async e => {
+      const btn = e.target; btn.disabled = true; btn.textContent = 'Opening…';
+      try {
+        const r = await api('GET_BRIEF', { run_id:h.run_id });
+        const asm = {}; (r.assessments || []).forEach(a => { asm[a.tactic_slot] = { tactic_name:a.tactic_name, content:a.content }; });
+        B = { runId:r.run_id, parts:r.parts, assessments:asm, pending:{}, dateLabel:fmtDate(r.created_at), custom:null, total:6 };
+        stage = 'brief'; render();
+      } catch (x) { btn.disabled = false; btn.textContent = 'Open Brief →'; alert(errText(x.code)); }
+    });
+    $('#histList').appendChild(box);
+  });
+  $('#histNew').addEventListener('click', newBrief);
+}
+
+/* ── Screens ── */
+function render() {
+  window.onscroll = null;
+  if (stage === 'init') return renderInit();
+  if (stage === 'access') return renderAccess();
+  if (stage === 'error') return renderError();
+  if (stage === 'loading') return renderLoading();
+  if (stage === 'briefLoading') return renderBriefLoading();
+  if (stage === 'brief') return renderBrief();
+  if (stage === 'history') { renderHistory(); return; }
+  if (stage === 'l2') return renderL2();
+  return renderL1();
+}
+function renderInit() {
+  $('#progressBar').style.width = '0%'; $('#progressLabel').textContent = '';
+  $('#panel').innerHTML = `<div class="loading-wrap"><div class="loading-spinner"></div><div class="loading-label">Opening The Promotions Instrument</div></div>`;
+}
+function renderAccess() {
+  $('#progressBar').style.width = '0%'; $('#progressLabel').textContent = '';
+  $('#panel').innerHTML = `<div class="intake-header"><div class="intake-headline">Open This Instrument From Your Access Link</div>
+    <div class="intake-desc">The Promotions instrument opens with the personal access link sent to your email. Use that link, or return to the Suite Index to request a new one.</div></div>
+    <div class="nav-row"><button type="button" class="btn-primary" id="toIndex">Go To The Suite Index →</button></div>`;
+  $('#toIndex').addEventListener('click', () => { window.location.href = 'https://quvivant.com/'; });
+}
+function renderError() {
+  $('#progressLabel').textContent = '';
+  $('#panel').innerHTML = `<div class="intake-header"><div class="intake-headline">That Did Not Complete</div></div>
+    <div class="intake-notice notice-error">${esc(ERR.msg)}</div>
+    <div class="nav-row">${ERR.retry ? '<button type="button" class="btn-primary" id="errRetry">Try Again</button>' : ''}<button type="button" class="btn-secondary" id="errBack">← Back</button></div>`;
+  if (ERR.retry) $('#errRetry').addEventListener('click', ERR.retry);
+  $('#errBack').addEventListener('click', () => { stage = ERR.back || 'l1'; render(); });
+  window.scrollTo(0, 0);
+}
+function renderLoading() {
+  $('#progressBar').style.width = '50%';
+  $('#progressLabel').textContent = 'Layer 1 of 2 · Writing your six questions';
+  $('#panel').innerHTML = `<div class="loading-wrap"><div class="loading-spinner"></div><div class="loading-label">Reading Your Answers</div><div class="loading-sub">Writing six custom questions for your situation…</div></div>`;
+  window.scrollTo(0, 0);
+}
+function renderBriefLoading() {
+  $('#progressBar').style.width = '50%';
+  $('#progressLabel').textContent = 'Layer 2 of 2 · Writing your brief';
+  $('#panel').innerHTML = `<div class="loading-wrap"><div class="loading-spinner"></div><div class="loading-label">Writing Your Promotions Brief</div><div class="loading-sub" id="bp">Starting your brief</div><div class="loading-sub" id="bw" style="margin-top:6px"></div><div class="loading-sub" style="margin-top:14px">A full brief takes a few minutes. Keep this page open.</div></div>`;
+  window.scrollTo(0, 0);
+}
+function renderL2() {
+  let body = `<div class="intake-header"><span class="intake-layer-tag">Layer 2 · Six Custom Questions</span>
+    <div class="intake-headline">${esc(L2HEAD)}</div>
+    <div class="intake-desc">${esc(L2DESC)} Answer as many as you can. The four marked Critical are required.</div></div>`;
+  body += L2Q.map((q, i) => { const crit = String(q.tier).toUpperCase() === 'CRITICAL'; return `<div class="q-block"><div class="q-label"><span class="q-num">L2 · Q${i + 1}</span><span class="q-tier ${crit ? 'critical' : ''}">${crit ? 'Critical' : 'Important'}</span></div>
+    <label class="q-text" for="l2_q${i + 1}" style="display:block">${esc(q.text)}</label>
+    <textarea class="q-textarea" id="l2_q${i + 1}" data-l2="q${i + 1}" rows="3" placeholder="${esc(q.placeholder || '')}">${esc(L2['q' + (i + 1)] || '')}</textarea></div>`; }).join('');
+  body += `<div class="q-block"><div class="q-label"><span class="q-tier">Optional</span></div>
+    <label class="q-text" for="l2_extra" style="display:block">Anything Else We Should Know?</label>
+    <div class="q-help">Add anything the questions did not cover, such as what customers say about you, objections you hear, seasons that matter, or your brand’s voice.</div>
+    <textarea class="q-textarea" id="l2_extra" rows="4">${esc(extra)}</textarea></div>`;
+  body += `<div class="nav-row"><button type="button" class="btn-primary" id="briefBtn">Generate Promotions Brief →</button>
+    <button type="button" class="btn-secondary" id="l2BackBtn">← Back</button><span class="nav-hint" id="l2hint"></span></div>`;
+  $('#panel').innerHTML = body;
+  $('#panel').querySelectorAll('[data-l2]').forEach(el => el.addEventListener('input', () => { L2[el.dataset.l2] = el.value; validate2(); }));
+  $('#l2_extra').addEventListener('input', e => { extra = e.target.value; });
+  $('#l2BackBtn').addEventListener('click', () => { stage = 'l1'; render(); });
+  $('#briefBtn').addEventListener('click', () => { if (!$('#briefBtn').disabled) goBrief(); });
+  validate2();
+  window.scrollTo(0, 0);
+}
+function validate2() {
+  const n = L2Q.filter((q, i) => (L2['q' + (i + 1)] || '').trim()).length;
+  const critOk = L2Q.every((q, i) => String(q.tier).toUpperCase() !== 'CRITICAL' || (L2['q' + (i + 1)] || '').trim());
+  $('#briefBtn').disabled = !critOk;
+  $('#l2hint').textContent = n + ' / ' + L2Q.length + ' answered';
+  $('#progressBar').style.width = (50 + Math.round(n / (L2Q.length || 1) * 50)) + '%';
+  $('#progressLabel').textContent = 'Layer 2 of 2 · ' + n + ' of ' + L2Q.length + ' answered';
+}
+
+/* ── Start ── */
+$('#btnHistory').addEventListener('click', () => { if (stage === 'briefLoading' || stage === 'access' || stage === 'init') return; stage = 'history'; render(); });
+$('#btnBack').addEventListener('click', () => { window.location.href = 'https://quvivant.com/'; });
+marked.use({ renderer:{ html: h => esc(h) } });   // model text is shown as text, never as page markup
+(async function init() {
+  TOKEN = getToken();
+  if (!TOKEN) { stage = 'access'; render(); return; }
+  render(); peekBadge();
+  try { const r = await api('LOAD_PROFILE'); PROFILE = r.profile || null; PREFILL = r.prefill || null; }
+  catch (e) { if (e.code === 'invalid_token') { stage = 'access'; render(); return; } }
+  startFresh();
+})();
+
+</script>
+</body>
+</html>
