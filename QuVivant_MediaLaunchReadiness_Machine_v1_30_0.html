@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuVivant Business Clarity – Media Launch Readiness</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  /* Two font families only: Crimson Pro (serif) and Arial (sans). Row II colour scheme: violet on navy. */
+  :root {
+    --gold:        #f0c040;
+    --gold-dim:    #8a7040;
+    --accent:      #A78BFA;
+    --accent-hi:   #C4B5FD;
+    --accent-deep: #4B3A94;
+    --accent-dark: #1B1438;
+    --accent-lite: rgba(167,139,250,0.13);
+    --accent-line: rgba(167,139,250,0.45);
+    --bg:          #042C53;
+    --lead:        #e2e2f2;   /* one colour for all reading text in cards */
+    --card-body:   #1f1f30;   /* lightened card background (Decision 22) */
+    --card-well:   #171724;   /* input wells inside cards */
+    --card:        #0f0f18;
+    --card-dark:   #090912;
+    --border:      #2b2b44;
+    --border-act:  #7a68c4;
+    --text:        #f0f0fa;
+    --text-mid:    #c4c4dc;
+    --text-dim:    #9a9ac0;
+    --white:       #f8f8ff;
+    --serif:       'Crimson Pro', Georgia, serif;
+    --sans:        Arial, Helvetica, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; background: var(--bg); color: var(--text); font-family: var(--serif); font-size: 18px; line-height: 1.65; overflow-x: hidden; }
+
+  .ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .amb { position: absolute; border-radius: 50%; }
+  .amb-1 { top: -8%; left: 10%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 65%); }
+  .amb-2 { bottom: 5%; right: 5%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(240,192,64,0.05) 0%, transparent 65%); }
+  .wrapper { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+  .site-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, #111120 0%, var(--bg) 100%); }
+  .brand-mark { font-family: var(--sans); font-size: 18px; letter-spacing: 1.5px; color: var(--gold); text-shadow: 0 0 40px rgba(240,192,64,0.35); }
+  .preview-banner { display: none; text-align: center; font-family: var(--sans); font-size: 14px; color: var(--gold); background: rgba(240,192,64,0.08); border-bottom: 1px solid var(--gold-dim); padding: 8px 16px; }
+  .preview-banner.show { display: block; }
+
+  .machine-header { display: flex; align-items: center; gap: 16px; max-width: 820px; margin: 28px auto 0; padding: 0 24px; width: 100%; }
+  .machine-icon { font-size: 34px; line-height: 1; }
+  .machine-title { font-family: var(--serif); font-size: 34px; color: var(--accent); letter-spacing: -0.5px; line-height: 1.1; }
+  .machine-subtitle { font-family: var(--sans); font-size: 14px; color: var(--text-mid); margin-top: 4px; }
+  .header-btns { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+  #bm-trial-badge { font-family: var(--sans); font-size: 13px; letter-spacing: 1px; color: var(--text-dim); padding: 4px 12px; border: 1px solid var(--border); border-radius: 4px; display: none; }
+  #bm-trial-badge.show { display: inline-block; }
+  .gen-steps { font-family: var(--sans); font-size: 15px; color: var(--text-dim); margin-top: 18px; line-height: 1.8; }
+  .err-wrap { max-width: 560px; margin: 70px auto; text-align: center; padding: 0 20px; }
+  .err-wrap h2 { font-size: 28px; font-weight: 400; color: var(--text); margin-bottom: 14px; }
+  .err-wrap p { font-size: 19px; color: var(--text-mid); line-height: 1.7; margin-bottom: 22px; }
+  .err-wrap .nav-row { justify-content: center; }
+  .machine-back { font-family: var(--sans); font-size: 14px; color: var(--text-mid); border: 1px solid var(--border); border-radius: 4px; padding: 8px 14px; background: none; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+  .machine-back:hover { color: var(--white); border-color: var(--border-act); }
+
+  .progress-wrap { max-width: 820px; margin: 22px auto 0; padding: 0 24px; width: 100%; }
+  .progress-bar-outer { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-bar-inner { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-deep), var(--accent)); border-radius: 2px; transition: width 0.4s ease; }
+  .progress-label { font-family: var(--sans); font-size: 13px; color: var(--text-dim); margin-top: 8px; text-align: right; }
+
+  .main { max-width: 820px; margin: 0 auto; padding: 24px 24px 60px; width: 100%; flex: 1; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .intake-header { margin-bottom: 26px; }
+  .intake-layer-tag { font-family: var(--sans); font-size: 14px; color: var(--accent-hi); margin-bottom: 8px; display: block; }
+  .intake-headline { font-family: var(--serif); font-size: 28px; color: var(--white); line-height: 1.2; margin-bottom: 10px; }
+  .intake-desc { font-size: 19px; color: var(--lead); line-height: 1.5; }
+  .intake-notice { background: var(--accent-lite); border: 1px solid var(--accent-line); border-radius: 4px; padding: 12px 16px; margin-top: 14px; font-family: var(--sans); font-size: 14px; color: var(--accent-hi); line-height: 1.55; }
+
+  .q-block { margin-bottom: 24px; background: var(--card-body); border: 1px solid var(--border); border-radius: 8px; padding: 22px 24px 20px; transition: border-color 0.2s; }
+  .q-block:focus-within { border-color: var(--border-act); }
+  .q-label { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .q-num { font-family: var(--sans); font-size: 14px; color: var(--accent-hi); }
+  .q-tier { font-family: var(--sans); font-size: 12px; padding: 2px 8px; border-radius: 3px; }
+  .q-tier.critical { color: var(--accent-hi); background: var(--accent-lite); border: 1px solid var(--accent-line); }
+  .q-tier.important { color: var(--text-mid); background: rgba(176,176,200,0.08); border: 1px solid rgba(176,176,200,0.28); }
+  .q-text { font-size: 21px; color: var(--lead); line-height: 1.4; margin-bottom: 14px; }
+  .q-textarea { width: 100%; min-height: 96px; resize: vertical; background: var(--card-well); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; color: var(--lead); font-family: var(--serif); font-size: 18px; line-height: 1.55; outline: none; transition: border-color 0.2s; }
+  .q-textarea:focus { border-color: var(--border-act); }
+  .q-textarea::placeholder { color: var(--text-dim); font-style: italic; }
+  .choice-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+  .choice { font-family: var(--serif); font-size: 18px; color: var(--lead); background: var(--card-well); border: 1px solid var(--border); border-radius: 6px; padding: 10px 18px; cursor: pointer; transition: color 0.2s, border-color 0.2s, background 0.2s; }
+  .choice:hover { color: var(--white); border-color: var(--border-act); }
+  .choice.selected { color: var(--white); background: var(--accent-lite); border-color: var(--accent); }
+
+  /* Publication selection */
+  .pub-grid { display: grid; gap: 12px; }
+  .pub-card { text-align: left; width: 100%; background: var(--card-body); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; cursor: pointer; color: inherit; font-family: inherit; transition: border-color 0.2s, background 0.2s; display: flex; gap: 16px; align-items: flex-start; }
+  .pub-card:hover:not(:disabled) { border-color: var(--border-act); background: #26263a; }
+  .pub-card.selected { border-color: var(--accent); background: var(--accent-lite); }
+  .pub-card:disabled { opacity: 0.45; cursor: not-allowed; }
+  .pub-check { flex: 0 0 22px; height: 22px; margin-top: 4px; border: 2px solid var(--border-act); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: var(--sans); font-size: 14px; color: var(--white); }
+  .pub-card.selected .pub-check { background: var(--accent); border-color: var(--accent); color: var(--accent-dark); }
+  .pub-stance { font-family: var(--sans); font-size: 13px; color: var(--accent-hi); border: 1px solid var(--accent-line); border-radius: 4px; padding: 2px 8px; margin-left: 12px; white-space: nowrap; vertical-align: middle; }
+  .pub-name { font-size: 21px; color: var(--lead); line-height: 1.3; }
+  .pub-meta { font-size: 17px; color: var(--lead); line-height: 1.5; margin-top: 2px; }
+
+  .pub-own { margin-top: 24px; background: var(--card-body); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px 22px; }
+  .own-label { font-size: 21px; color: var(--lead); line-height: 1.35; margin-bottom: 8px; }
+  .own-label-2 { margin-top: 16px; }
+  .own-input { width: 100%; box-sizing: border-box; background: var(--card-well); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; color: var(--lead); font-family: var(--serif); font-size: 18px; line-height: 1.5; outline: none; transition: border-color 0.2s; }
+  .own-input:focus { border-color: var(--border-act); }
+  .own-input::placeholder { color: var(--text-dim); font-style: italic; }
+  .own-area { resize: vertical; min-height: 80px; margin-bottom: 16px; }
+  .pub-own .btn-secondary:disabled { opacity: 0.45; cursor: default; }
+  .nav-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--border); }
+  .btn-primary { font-family: var(--serif); font-size: 18px; font-weight: 600; letter-spacing: 0.3px; background: linear-gradient(135deg, var(--accent-deep), #6a54c8); color: var(--white); border: 1px solid var(--accent); border-radius: 6px; padding: 13px 28px; cursor: pointer; transition: opacity 0.2s, box-shadow 0.2s; }
+  .btn-primary:hover { opacity: 0.92; box-shadow: 0 0 20px rgba(167,139,250,0.25); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+  .btn-secondary { font-family: var(--sans); font-size: 14px; background: transparent; color: var(--text-mid); border: 1px solid var(--border); border-radius: 6px; padding: 12px 18px; cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+  .btn-secondary:hover { color: var(--white); border-color: var(--border-act); }
+  .nav-hint { margin-left: auto; font-family: var(--sans); font-size: 14px; color: var(--text-dim); }
+  :focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; }
+
+  .loading-wrap { text-align: center; padding: 64px 20px; }
+  .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 22px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-label { font-size: 24px; color: var(--accent-hi); }
+  .loading-sub { font-family: var(--sans); font-size: 15px; color: var(--text-dim); margin-top: 10px; }
+
+  /* Output: one column, single brief card */
+  .output-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .output-badge { font-family: var(--sans); font-size: 14px; color: var(--accent-hi); background: var(--accent-lite); border: 1px solid var(--accent-line); border-radius: 4px; padding: 4px 12px; }
+  .output-completeness { font-family: var(--sans); font-size: 14px; color: var(--text-dim); }
+  .output-actions { margin-left: auto; display: flex; gap: 8px; }
+  .btn-action { font-family: var(--sans); font-size: 14px; padding: 8px 14px; background: none; border: 1px solid var(--border); border-radius: 4px; color: var(--text-mid); cursor: pointer; transition: color 0.2s, border-color 0.2s; }
+  .btn-action:hover { color: var(--white); border-color: var(--border-act); }
+
+  .brief-body { font-family: var(--serif); background: var(--card-body); border: 1px solid rgba(196,181,253,0.5); border-radius: 8px; padding: 36px 42px; word-wrap: break-word; }
+  .brief-part { padding-bottom: 6px; }
+  .brief-part + .brief-part { margin-top: 34px; padding-top: 34px; border-top: 1px solid var(--border); }
+  .brief-body h2 { font-size: 23px; font-weight: 400; color: var(--accent); margin: 0 0 22px; padding-bottom: 12px; border-bottom: 1px solid var(--accent-line); }
+  .brief-body h3 { font-size: 23px; font-weight: 400; color: #d9ceff; margin: 32px 0 12px; }
+  .brief-body h4 { font-size: 21px; font-weight: 400; color: var(--accent-hi); margin: 18px 0 3px; }
+  .brief-body h4 + p { margin-top: 0; margin-bottom: 10px; }
+  .brief-body h3.q-head { margin: 46px 0 4px; padding-top: 26px; border-top: 1px solid var(--accent-line); }
+  .brief-body h3.q-head:first-of-type { border-top: none; }
+  .brief-body p.danger-q { margin: 38px 0 2px; }
+  .brief-body p.danger-q + h4, .brief-body h3.q-head + p + h4 { margin-top: 6px; }
+  .brief-body p.danger-q.first { margin-top: 16px; }
+  .brief-body h3.q-head + p { margin-bottom: 4px; }
+  .brief-body p { font-size: 21px; color: var(--lead); line-height: 1.35; margin-bottom: 16px; }
+  .message-card { background: var(--card-body); border: 1px solid rgba(196,181,253,0.5); border-radius: 8px; padding: 22px 28px 8px; margin: 26px 0 22px; }
+  .message-card .message-label { font-family: var(--sans); font-size: 18px; color: var(--accent-hi); margin-bottom: 10px; }
+  .key-option { display: flex; gap: 14px; align-items: flex-start; width: 100%; text-align: left; font-family: var(--serif); font-size: 21px; line-height: 1.35; color: var(--lead); background: var(--card-well); border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; margin-bottom: 10px; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+  .key-option:hover { border-color: var(--border-act); }
+  .key-option.selected { border-color: var(--accent); background: var(--accent-lite); }
+  .key-dot { flex: none; width: 9px; height: 9px; margin-top: 9px; border-radius: 50%; border: 1.5px solid var(--accent-hi); }
+  .key-option.selected .key-dot { background: var(--accent); }
+  .key-prompt, .key-cue { font-size: 21px; line-height: 1.35; color: var(--lead); margin: 0 0 14px; }
+  .key-custom { width: 100%; box-sizing: border-box; background: var(--card-well); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; margin: 4px 0 10px; color: var(--lead); font-family: var(--serif); font-size: 21px; line-height: 1.35; outline: none; transition: border-color 0.2s; }
+  .key-custom:focus, .key-custom.selected { border-color: var(--accent); }
+  .key-custom-label { font-size: 21px; color: var(--lead); margin: 14px 0 6px; }
+  .key-commit { font-family: var(--sans); font-size: 14px; color: var(--accent-hi); background: var(--accent-lite); border: 1px solid var(--accent-line); border-radius: 4px; padding: 7px 16px; cursor: pointer; margin: 4px 0 18px; }
+  .key-commit:disabled { opacity: 0.45; cursor: default; }
+  .message-text { font-size: 21px; line-height: 1.35; color: var(--lead); margin: 0 0 14px; }
+  .brief-body ul, .brief-body ol { padding-left: 26px; margin-bottom: 14px; }
+  .brief-body li { font-size: 21px; color: var(--lead); line-height: 1.35; margin-bottom: 8px; }
+  .brief-body strong { color: var(--lead); font-weight: 600; }
+  .brief-body em { color: var(--lead); }
+  .box-actions { display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: 34px; padding-top: 20px; border-top: 1px solid var(--accent-line); }
+  .nav-btn { white-space: nowrap; flex-shrink: 0; font-family: var(--sans); font-size: 14px; color: var(--accent-hi); background: var(--accent-lite); border: 1px solid var(--accent-line); border-radius: 4px; padding: 5px 12px; cursor: pointer; transition: color .2s, border-color .2s; }
+  .page-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 34px; padding-top: 20px; border-top: 1px solid var(--accent-line); }
+  .nav-btn:hover { color: var(--white); border-color: var(--border-act); }
+  .grp { display: flex; gap: 8px; }
+  /* One card listing every story summary */
+  .story-list { background: var(--card-body); border: 1px solid var(--accent-line); border-radius: 8px; margin-top: 18px; }
+  .story-row { padding: 22px 26px 6px; }
+  .story-row + .story-row { border-top: 1px solid var(--border); }
+  .story-head { display: flex; align-items: flex-start; gap: 20px; }
+  .story-info { flex: 1; }
+  .story-pub { font-family: var(--sans); font-size: 18px; color: var(--accent-hi); margin-bottom: 4px; }
+  .story-title { font-size: 23px; font-weight: 400; color: var(--lead); line-height: 1.3; margin-bottom: 6px; }
+  .story-by { font-family: var(--sans); font-size: 16px; color: var(--text-dim); }
+  .btn-primary { font-family: var(--serif); font-size: 16px; font-weight: 600; letter-spacing: 0.3px; background: linear-gradient(135deg, var(--accent-deep), #6a54c8); color: var(--white); border: 1px solid var(--accent); border-radius: 6px; padding: 10px 20px; cursor: pointer; white-space: nowrap; flex: 0 0 auto; transition: opacity 0.2s, box-shadow 0.2s; }
+  .btn-primary:hover { opacity: 0.92; box-shadow: 0 0 20px rgba(167,139,250,0.25); }
+  .brief-body .story-summary { color: var(--lead); font-size: 21px; font-weight: 400; margin: 14px 0 16px; }
+  .brief-body .story-intro { color: var(--lead); font-size: 21px; font-weight: 400; }
+  .story-full { display: none; margin: 4px 0 18px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .story-full.open { display: block; }
+  .story-foot { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .story-label { font-family: var(--sans); font-size: 18px; color: var(--accent-hi); margin-bottom: 12px; }
+  .story-label-debrief { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--border); }
+
+
+  .entire-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 28px; padding: 14px 18px; border: 1px solid rgba(196,181,253,0.5); border-radius: 8px; background: var(--card-body); }
+  .entire-row .lbl { font-family: var(--sans); font-size: 16px; color: var(--accent-hi); }
+
+  .output-followup { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--border); }
+  .followup-label { font-family: var(--serif); font-size: 21px; color: var(--lead); margin-bottom: 14px; display: block; }
+  .followup-input-wrap { display: flex; gap: 10px; flex-wrap: wrap; }
+  .followup-input { flex: 1; min-width: 220px; background: var(--card-well); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; color: var(--lead); font-family: var(--serif); font-size: 21px; outline: none; transition: border-color 0.2s; }
+  .followup-input:focus { border-color: var(--border-act); }
+  .followup-input::placeholder { color: var(--text-dim); font-style: italic; }
+  .followup-thread { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .thread-entry { padding: 14px 18px; border-radius: 6px; font-size: 18px; line-height: 1.65; white-space: pre-wrap; word-wrap: break-word; }
+  .thread-entry.user { background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-mid); font-style: italic; }
+  .thread-entry.machine { background: var(--accent-lite); border: 1px solid var(--accent-line); color: var(--text); }
+
+  /* Previous briefs */
+  .hist-item { display: flex; align-items: center; gap: 16px; background: var(--card-body); border: 1px solid var(--border); border-radius: 8px; padding: 18px 22px; margin-bottom: 12px; }
+  .hist-title { font-size: 21px; color: var(--white); }
+  .hist-meta { font-family: var(--sans); font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+  .hist-item .btn-action { margin-left: auto; }
+
+  .paywall { max-width: 520px; margin: 80px auto; text-align: center; padding: 0 20px; }
+  .paywall-tag { font-family: var(--sans); font-size: 14px; color: var(--gold); margin-bottom: 20px; }
+  .paywall h2 { font-size: 28px; font-weight: 400; color: var(--text); margin-bottom: 16px; }
+  .paywall p { font-size: 19px; color: var(--text-mid); line-height: 1.7; margin-bottom: 12px; }
+  .paywall-cta { display: inline-block; padding: 14px 36px; background: linear-gradient(135deg, #f0c040, #c8960c); color: #06060a; font-family: var(--serif); font-size: 18px; font-weight: 500; text-decoration: none; border-radius: 6px; margin: 16px 0; }
+  .paywall-note { font-family: var(--sans); font-size: 14px; color: var(--text-dim); }
+
+  .site-footer { text-align: center; padding: 16px; font-family: var(--sans); font-size: 13px; color: var(--text-dim); border-top: 1px solid var(--border); margin-top: 16px; }
+
+  @media (prefers-reduced-motion: reduce) { .loading-spinner { animation: none; } .progress-bar-inner { transition: none; } }
+</style>
+</head>
+<body>
+<div class="ambient"><div class="amb amb-1"></div><div class="amb amb-2"></div></div>
+<div class="wrapper">
+
+  <header class="site-header">
+    <div class="brand-mark">QuVivant Business Clarity</div>
+  </header>
+
+  <div class="machine-header" id="machineHeader">
+    <span class="machine-icon" aria-hidden="true">📰</span>
+    <div>
+      <div class="machine-title">Media Launch Readiness</div>
+      <div class="machine-subtitle">Row II · Market Opportunity</div>
+    </div>
+    <div class="header-btns">
+      <div id="bm-trial-badge"></div>
+      <button class="machine-back" id="btnHistory">Previous Briefs</button>
+      <button class="machine-back" id="btnBack">← Suite Index</button>
+    </div>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap" style="display:none;">
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+    <div class="progress-label" id="progressLabel"></div>
+  </div>
+
+  <main class="main">
+
+    <!-- Layer 1 -->
+    <div class="screen active" id="screen-l1">
+      <div class="intake-header">
+        <span class="intake-layer-tag">Layer 1 · Twelve Questions</span>
+        <div class="intake-headline">Tell Us About Your Launch</div>
+        <div class="intake-desc">These twelve questions give the instrument what a reporter would find. You then choose the publications to simulate, and three custom questions follow. All twelve are required.</div>
+      </div>
+      <div id="l1Questions"></div>
+      <div class="nav-row">
+        <button class="btn-primary" id="l1NextBtn" disabled>Choose Publications →</button>
+        <span class="nav-hint" id="l1hint">0 / 12 required</span>
+      </div>
+    </div>
+
+    <!-- Publication selection -->
+    <div class="screen" id="screen-pubs">
+      <div class="intake-header">
+        <span class="intake-layer-tag">Step 2 · Publications</span>
+        <div class="intake-headline">Which Publications Should Cover You?</div>
+        <div class="intake-desc">Based on your twelve answers, the instrument suggests these publications. Choose one to three. The instrument writes the story each publication's reporter would file about your launch, then debriefs you on what it exposed.</div>
+        <div class="intake-notice">Every reporter in a simulation is fictional. The label on each publication is an estimate of how a reporter there is likely to approach your story, not a rule about the publication. Choose a mix of Supportive, Balanced and Probing for the most useful picture.</div>
+      </div>
+      <div class="pub-grid" id="pubGrid"></div>
+      <div class="pub-own">
+        <div class="own-label">Or Name Your Own Publication</div>
+        <input type="text" class="own-input" id="ownPubName" placeholder="e.g. the name of a trade magazine or newsletter your customers read" />
+        <div class="own-label own-label-2">Optional: Tell the Instrument About It</div>
+        <textarea class="own-input own-area" id="ownPubDesc" rows="3" placeholder="e.g. a line about who reads it and what it covers, or a few recent headlines"></textarea>
+        <button type="button" class="btn-secondary" id="ownPubBtn" disabled>Add This Publication</button>
+      </div>
+      <div class="nav-row">
+        <button class="btn-primary" id="pubNextBtn" disabled>Generate Custom Questions →</button>
+        <button class="btn-secondary" id="pubBackBtn">← Back</button>
+        <span class="nav-hint" id="pubHint">0 / 3 selected</span>
+      </div>
+    </div>
+
+    <!-- Publication suggestions loading -->
+    <div class="screen" id="screen-publoading">
+      <div class="loading-wrap">
+        <div class="loading-spinner"></div>
+        <div class="loading-label">Choosing Publications for You</div>
+        <div class="loading-sub">Finding the publications whose readers match your audience…</div>
+      </div>
+    </div>
+
+    <!-- Layer 2 loading -->
+    <div class="screen" id="screen-l2loading">
+      <div class="loading-wrap">
+        <div class="loading-spinner"></div>
+        <div class="loading-label">Reading Your Launch</div>
+        <div class="loading-sub">Generating your three custom questions…</div>
+      </div>
+    </div>
+
+    <!-- Layer 2 -->
+    <div class="screen" id="screen-l2">
+      <div class="intake-header">
+        <span class="intake-layer-tag">Layer 2 · Three Custom Questions</span>
+        <div class="intake-headline">Closing the Gaps</div>
+        <div class="intake-desc">These three questions were chosen by the instrument from your twelve answers, to draw out whatever will make your brief most useful. Answer as many as you can.</div>
+      </div>
+      <div id="l2Questions"></div>
+      <div class="q-block">
+        <div class="q-label"><span class="q-num">Background Material</span><span class="q-tier important">Optional</span></div>
+        <div class="q-text">Paste anything a reporter researching you would find: your website text, a founder biography, earlier coverage, product documentation, or the frameworks and methods you rely on.</div>
+        <textarea class="q-textarea" id="l2Background" rows="9" placeholder="The more the instrument has to work with, the more specific and realistic the simulated stories and questions will be."></textarea>
+      </div>
+      <div class="nav-row">
+        <button class="btn-primary" id="l2GenerateBtn">Generate Launch Readiness Brief →</button>
+        <button class="btn-secondary" id="l2BackBtn">← Back</button>
+        <span class="nav-hint" id="l2hint">0 / 3 answered</span>
+      </div>
+    </div>
+
+    <!-- Generating -->
+    <div class="screen" id="screen-generating">
+      <div class="loading-wrap">
+        <div class="loading-spinner"></div>
+        <div class="loading-label">Forming Your Launch Readiness Brief</div>
+        <div class="loading-sub" id="genStatus">Reading your launch…</div>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="screen" id="screen-output">
+      <div class="output-meta">
+        <span class="output-badge">Launch Readiness Brief</span>
+        <span class="output-completeness" id="outputCompleteness"></span>
+        <div class="output-actions">
+          <button class="btn-action" id="btnNewBrief">New Brief</button>
+        </div>
+      </div>
+      <div class="brief-body" id="briefBody"></div>
+      <div class="entire-row">
+        <span class="lbl">Entire Launch Readiness Brief:</span>
+        <div class="grp"><button class="nav-btn" id="btnCopyAll">Copy</button><button class="nav-btn" id="btnPdfAll">Save As PDF</button><button class="nav-btn" id="btnNewBriefAll">New Brief</button></div>
+      </div>
+      <div class="output-followup">
+        <span class="followup-label">Follow-Up: Ask the Instrument a Specific Question About Your Brief</span>
+        <div class="followup-input-wrap">
+          <input type="text" class="followup-input" id="followupInput" placeholder="e.g. How should I answer the hardest question from the first reporter?" />
+          <button class="btn-primary" id="followupBtn">Ask →</button>
+        </div>
+        <div class="followup-thread" id="followupThread"></div>
+      </div>
+      <div class="page-nav">
+        <button class="nav-btn" id="btnSuiteBottom">← Suite Index</button>
+        <button class="nav-btn" id="btnNewBriefBottom">New Brief</button>
+      </div>
+    </div>
+
+    <!-- Previous briefs -->
+    <div class="screen" id="screen-history">
+      <div class="intake-header">
+        <span class="intake-layer-tag">Previous Briefs</span>
+        <div class="intake-headline">Your Saved Briefs</div>
+        <div class="intake-desc">Reopen any brief you have already generated. Reopening does not use a session.</div>
+      </div>
+      <div id="histList"></div>
+      <div class="nav-row"><button class="btn-secondary" id="histBackBtn">← Back</button></div>
+    </div>
+
+    <!-- Error -->
+    <div class="screen" id="screen-error">
+      <div class="err-wrap">
+        <h2 id="errTitle">Something Went Wrong</h2>
+        <p id="errMsg"></p>
+        <div class="nav-row"><button class="btn-primary" id="errRetryBtn">Try Again</button><button class="btn-secondary" id="errBackBtn">← Back</button></div>
+      </div>
+    </div>
+
+    <!-- Access -->
+    <div class="screen" id="screen-access">
+      <div class="err-wrap">
+        <h2>Access Link Needed</h2>
+        <p>This instrument opens from your QuVivant account. Return to the Suite Index and open it from there.</p>
+        <div class="nav-row"><button class="btn-primary" id="accessBtn">← Suite Index</button></div>
+      </div>
+    </div>
+
+    <!-- Paywall -->
+    <div class="screen" id="screen-paywall">
+      <div class="paywall">
+        <div class="paywall-tag">Free Trial Complete</div>
+        <h2>Your free sessions are complete.</h2>
+        <p>Subscribe to continue accessing all QuVivant Business Clarity instruments with unlimited sessions.</p>
+        <a href="#" class="paywall-cta">Subscribe to Continue →</a>
+        <div class="paywall-note">Unlimited sessions · All instruments · Cancel anytime</div>
+      </div>
+    </div>
+
+  </main>
+  <footer class="site-footer">QuVivant Business Clarity · Media Launch Readiness · Market Opportunity</footer>
+</div>
+
+<script>
+// ── Live connection (token from the Suite Index, same as Promotions) ──
+const API = 'https://wljxufilyobwpbavvwsr.supabase.co/functions/v1/media-launch';
+const VALIDATE_API = 'https://wljxufilyobwpbavvwsr.supabase.co/functions/v1/bm-trial-validate';
+const TOKEN_KEYS = ['bm_token', 'bmToken', 'bm-token', 'quvivant_token', 'token'];
+function getToken() {
+  try { const t = new URLSearchParams(location.search).get('token'); if (t) { try { sessionStorage.setItem('bm_token', t); } catch (e) {} return t; } } catch (e) {}
+  for (const name of ['sessionStorage', 'localStorage']) {
+    for (const k of TOKEN_KEYS) { try { const v = window[name].getItem(k); if (v) return v; } catch (e) {} }
+  }
+  return '';
+}
+const TOKEN = getToken();
+class ApiError extends Error { constructor(code, status) { super(code); this.code = code; this.status = status; } }
+async function api(command, fields) {
+  let res;
+  try { res = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ token: TOKEN, command }, fields || {})) }); }
+  catch (e) { throw new ApiError('network', 0); }
+  let data = null; try { data = await res.json(); } catch (e) {}
+  if (!res.ok) throw new ApiError((data && data.error) || 'server_error', res.status);
+  return data;
+}
+// One automatic retry for a generation call that came back incomplete or failed upstream.
+async function apiRetry(command, fields) {
+  try { return await api(command, fields); }
+  catch (e) { if (['incomplete', 'upstream_error', 'network', 'server_error', 'bad_publications', 'bad_questions'].includes(e.code)) return await api(command, fields); throw e; }
+}
+function errText(code) {
+  const m = {
+    network: 'The connection dropped. Check your connection and try again.',
+    trial_exhausted: 'Your free sessions are used. Return to the Suite Index to subscribe and keep working.',
+    fair_use_limit: 'You have reached the number of briefs available in one day. Please try again tomorrow.',
+    rate_limited: 'Too many briefs have been started in the last hour. Please try again a little later.',
+    run_limit: 'This brief needed too many attempts and was stopped. No session was used. Please start a new brief.',
+    incomplete: 'The brief did not finish writing. No session was used. Please try again.',
+    followup_window_closed: 'Follow-up questions are no longer open for this brief.',
+    brief_exists: 'This brief has already been written. Open it from Previous Briefs.',
+    invalid_token: 'This access link is not recognised.'
+  };
+  return m[code] || 'Something went wrong on our side. No session was used. Please try again.';
+}
+function showBadge(s) {
+  const b = $('bm-trial-badge'); if (!b || !s) return;
+  b.textContent = s.status === 'subscribed' ? 'Subscribed' : (s.uses_remaining + (s.uses_remaining === 1 ? ' Session Left' : ' Sessions Left'));
+  b.classList.add('show');
+}
+async function peekBadge() {
+  try { const r = await fetch(VALIDATE_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: TOKEN, peek: true }) }); if (r.ok) showBadge(await r.json()); } catch (e) {}
+}
+let errRetry = null, errBack = 'l1';
+function failTo(e, back, retry) {
+  const code = e && e.code;
+  if (code === 'invalid_token') { showScreen('access'); return; }
+  if (code === 'trial_exhausted') { showScreen('paywall'); return; }
+  $('errMsg').textContent = errText(code);
+  errBack = back; errRetry = retry || null;
+  $('errRetryBtn').style.display = retry ? '' : 'none';
+  showScreen('error');
+}
+const $ = id => document.getElementById(id);
+
+// ── Layer 1 (twelve required questions) ───────────────────────────────
+const L1 = [
+  { id: 'q1', label: 'Q1 · Your Product or Service', type: 'text', open: true,
+    text: 'What is it? Describe it in two to four sentences, as you would to a stranger.',
+    ph: 'e.g. A booking and reminder tool for independent physiotherapy clinics. It fills cancelled slots automatically from a waiting list.' },
+  { id: 'q2', label: 'Q2 · Your Audiences', type: 'audience',
+    text: 'Who is your primary audience, who is your secondary audience if you have one, and where are they?',
+    options: ['Consumers', 'Small and Mid-Sized Businesses', 'Enterprise Buyers', 'A Mix of Consumers and Business'],
+    ph: 'Secondary audience, e.g. clinic receptionists who run the schedule day to day. Write "None" if you have no secondary audience.',
+    geoLabel: 'Where Your Customers Are',
+    geoOptions: ['Local or Regional', 'National', 'International'],
+    geoPh: 'The country, and the region if local or regional, e.g. Canada, mainly Ontario.' },
+  { id: 'q3', label: 'Q3 · Launch Timeline', type: 'choice',
+    text: 'When do you launch?',
+    options: ['Immediately', 'Within 30 Days', 'In 60–90 Days', 'Still Planning'] },
+  { id: 'q4', label: 'Q4 · Awareness Budget', type: 'choice',
+    text: 'What is your monthly budget for building awareness?',
+    options: ['Bootstrap', 'Under $1K', '$1K–$5K', '$5K–$20K', '$20K and Up'] },
+  { id: 'q5', label: 'Q5 · Active Channels', type: 'text',
+    text: 'Which channels, if any, are already active for you?',
+    ph: 'e.g. A LinkedIn page with 400 followers, a small email list, and one trade newsletter that has mentioned us. Write "None" if nothing is active yet.' },
+  { id: 'q6', label: 'Q6 · The Core Belief', type: 'text', open: true,
+    text: 'What is the single most important thing a new customer should believe about your product?',
+    ph: 'e.g. Empty appointment slots are lost income that a clinic can recover without hiring anyone.' },
+  { id: 'q7', label: 'Q7 · Closest Competitors', type: 'text',
+    text: 'Who are your two or three closest competitors or reference points?',
+    ph: 'e.g. Two large practice-management suites and a general-purpose booking app that many clinics use.' },
+  { id: 'q8', label: 'Q8 · What Is New and Why Now', type: 'text', open: true,
+    text: 'What is genuinely new or first about your product, and why does it matter now? Give the detail a reporter could put in a headline.',
+    ph: 'e.g. The first waiting-list tool built specifically for small physiotherapy clinics, launching as a provincial billing change takes effect this winter.' },
+  { id: 'q9', label: 'Q9 · Your Proof', type: 'text', open: true,
+    text: 'What proof do you have today? Give specific numbers, names, dates, and results, and say how each was measured.',
+    ph: 'e.g. Three pilot clinics recovered about 18 percent of cancelled slots over eight weeks, measured from their own booking records.' },
+  { id: 'q10', label: 'Q10 · Your Background', type: 'text',
+    text: 'What in your background makes you the person to build this, and what would a reporter find if they looked you up?',
+    ph: 'e.g. Twelve years running a clinic, a previous venture that closed, and a public talk on scheduling.' },
+  { id: 'q11', label: 'Q11 · Independent Voices', type: 'text',
+    text: 'Who could a reporter call to speak about your product without being you, such as a customer, an analyst, or a partner? Say what each would likely tell them.',
+    ph: 'e.g. The owner of one pilot clinic, who would praise the results but mention a rough first week.' },
+  { id: 'q12', label: 'Q12 · Doubts and Soft Spots', type: 'text', open: true,
+    text: 'What objection or doubt would a skeptical journalist or buyer most likely raise, and what part of your story would you least want a reporter to dig into?',
+    ph: 'e.g. Clinics already have booking software, so why switch? And our data hosting arrangement is still being finalized.' }
+];
+
+// ── Publications: suggested by the instrument from the Layer 1 answers ──
+let PUBS = [];
+let customPubs = [];
+function allPubs() { return PUBS.concat(customPubs); }
+
+let L2Q = [];
+
+// ── State ───────────────────────────────────────────────────────────
+let l1Answers = {};
+let selectedPubs = [];
+let l2Answers = {};
+let briefParts = [];
+let statusTimer = null;
+let RUN = null;          // run id on the server
+let keyMessage = null;   // the committed Key Message for the open brief
+let bgNote = '';         // note for the Input Record about Background Material
+
+// ── Screens and progress ────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('screen-' + id).classList.add('active');
+  $('machineHeader').style.display = (id === 'paywall' || id === 'access') ? 'none' : 'flex';
+  $('progressWrap').style.display = ['l1', 'pubs', 'publoading', 'l2loading', 'l2', 'generating'].includes(id) ? 'block' : 'none';
+  if (id === 'l1') updateL1Progress();
+  if (id === 'pubs') setProgress(45, 'Step 2 · ' + selectedPubs.length + ' of 3 publications chosen');
+  if (id === 'publoading') setProgress(42, 'Choosing publications for you…');
+  if (id === 'l2loading') setProgress(50, 'Generating your custom questions…');
+  if (id === 'l2') updateL2Progress();
+  if (id === 'generating') setProgress(90, 'Generating your brief…');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function setProgress(pct, label) { $('progressBar').style.width = pct + '%'; $('progressLabel').textContent = label; }
+
+// ── Layer 1 ─────────────────────────────────────────────────────────
+function buildL1() {
+  const box = $('l1Questions');
+  box.innerHTML = '';
+  L1.forEach(q => {
+    const block = document.createElement('div'); block.className = 'q-block';
+    const label = document.createElement('div'); label.className = 'q-label';
+    const num = document.createElement('span'); num.className = 'q-num'; num.textContent = q.label; label.appendChild(num);
+    const text = document.createElement('div'); text.className = 'q-text'; text.textContent = q.text;
+    block.appendChild(label); block.appendChild(text);
+    if (q.type === 'audience') {
+      const grid = document.createElement('div'); grid.className = 'choice-grid';
+      const sec = document.createElement('textarea'); sec.className = 'q-textarea'; sec.rows = 3; sec.placeholder = q.ph; sec.style.marginTop = '14px';
+      const part = { primary: '', secondary: '', geo: '', where: '' };
+      const sync = () => { if (part.primary && part.secondary && part.geo && part.where) l1Answers[q.id] = 'Primary: ' + part.primary + '. Secondary: ' + part.secondary.replace(/[.\s]+$/, '') + '. Where: ' + part.geo + ', ' + part.where; else delete l1Answers[q.id]; updateL1Progress(); };
+      q.options.forEach(opt => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'choice'; b.textContent = opt;
+        b.addEventListener('click', () => { grid.querySelectorAll('.choice').forEach(c => c.classList.remove('selected')); b.classList.add('selected'); part.primary = opt; sync(); });
+        grid.appendChild(b);
+      });
+      sec.addEventListener('input', () => { part.secondary = sec.value.trim(); sync(); });
+      block.appendChild(grid); block.appendChild(sec);
+      const gl = document.createElement('div'); gl.className = 'q-text'; gl.style.marginTop = '22px'; gl.textContent = q.geoLabel; block.appendChild(gl);
+      const ggrid = document.createElement('div'); ggrid.className = 'choice-grid geo-grid';
+      q.geoOptions.forEach(opt => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'choice'; b.textContent = opt;
+        b.addEventListener('click', () => { ggrid.querySelectorAll('.choice').forEach(c => c.classList.remove('selected')); b.classList.add('selected'); part.geo = opt; sync(); });
+        ggrid.appendChild(b);
+      });
+      const gt = document.createElement('textarea'); gt.className = 'q-textarea geo-text'; gt.rows = 2; gt.placeholder = q.geoPh; gt.style.marginTop = '14px'; gt.style.minHeight = '60px';
+      gt.addEventListener('input', () => { part.where = gt.value.trim(); sync(); });
+      block.appendChild(ggrid); block.appendChild(gt);
+    } else if (q.type === 'choice') {
+      const grid = document.createElement('div'); grid.className = 'choice-grid';
+      q.options.forEach(opt => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'choice'; b.textContent = opt;
+        b.addEventListener('click', () => {
+          grid.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+          b.classList.add('selected'); l1Answers[q.id] = opt; updateL1Progress();
+        });
+        grid.appendChild(b);
+      });
+      block.appendChild(grid);
+    } else {
+      const ta = document.createElement('textarea'); ta.className = 'q-textarea'; ta.id = 'l1_' + q.id;
+      ta.placeholder = q.ph; ta.rows = q.open ? 5 : 3;
+      ta.addEventListener('input', () => { const v = ta.value.trim(); if (v) l1Answers[q.id] = v; else delete l1Answers[q.id]; updateL1Progress(); });
+      block.appendChild(ta);
+    }
+    box.appendChild(block);
+  });
+}
+function updateL1Progress() {
+  const n = Object.keys(l1Answers).length;
+  $('l1hint').textContent = n + ' / 12 required';
+  $('l1NextBtn').disabled = n < 12;
+  setProgress(Math.round(n / 12 * 40), 'Layer 1 of 2 · ' + n + ' of 12 answered');
+}
+async function suggestPubs() {
+  showScreen('publoading');
+  try {
+    const r = await apiRetry('SUGGEST_PUBLICATIONS', { layer1: l1Answers });
+    RUN = r.run_id; PUBS = r.publications; selectedPubs = [];
+    buildPubs(); refreshPubCards(); showScreen('pubs'); peekBadge();
+  } catch (e) { failTo(e, 'l1', suggestPubs); }
+}
+$('l1NextBtn').addEventListener('click', suggestPubs);
+
+// ── Publications ────────────────────────────────────────────────────
+function buildPubs() {
+  const grid = $('pubGrid'); grid.innerHTML = '';
+  allPubs().forEach(p => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'pub-card'; b.dataset.id = p.id;
+    b.innerHTML = '<span class="pub-check"></span><span><div class="pub-name"></div><div class="pub-meta"></div></span>';
+    b.querySelector('.pub-name').textContent = p.name; b.querySelector('.pub-meta').textContent = p.meta;
+    if (p.stance) { const t = document.createElement('span'); t.className = 'pub-stance'; t.textContent = p.stance; b.querySelector('.pub-name').appendChild(t); }
+    b.addEventListener('click', () => togglePub(p.id));
+    grid.appendChild(b);
+  });
+}
+function togglePub(id) {
+  const i = selectedPubs.indexOf(id);
+  if (i >= 0) selectedPubs.splice(i, 1); else if (selectedPubs.length < 3) selectedPubs.push(id);
+  document.querySelectorAll('.pub-card').forEach(c => {
+    const sel = selectedPubs.includes(c.dataset.id);
+    c.classList.toggle('selected', sel);
+    c.querySelector('.pub-check').textContent = sel ? '✓' : '';
+    c.disabled = !sel && selectedPubs.length >= 3;
+  });
+  $('pubHint').textContent = selectedPubs.length + ' / 3 selected';
+  $('pubNextBtn').disabled = selectedPubs.length < 1;
+  setProgress(45, 'Step 2 · ' + selectedPubs.length + ' of 3 publications chosen');
+}
+function refreshPubCards() {
+  document.querySelectorAll('.pub-card').forEach(c => {
+    const sel = selectedPubs.includes(c.dataset.id);
+    c.classList.toggle('selected', sel);
+    c.querySelector('.pub-check').textContent = sel ? '✓' : '';
+    c.disabled = !sel && selectedPubs.length >= 3;
+  });
+  $('pubHint').textContent = selectedPubs.length + ' / 3 selected';
+  $('pubNextBtn').disabled = selectedPubs.length < 1;
+}
+$('ownPubName').addEventListener('input', () => { $('ownPubBtn').disabled = !$('ownPubName').value.trim(); });
+$('ownPubBtn').addEventListener('click', () => {
+  const name = $('ownPubName').value.trim(); if (!name) return;
+  const desc = $('ownPubDesc').value.trim();
+  const id = 'custom' + (customPubs.length + 1);
+  customPubs.push({ id, name, meta: desc ? desc : 'Added by you.', custom: true });
+  if (selectedPubs.length < 3) selectedPubs.push(id);
+  buildPubs(); refreshPubCards();
+  $('ownPubName').value = ''; $('ownPubDesc').value = ''; $('ownPubBtn').disabled = true;
+});
+$('pubBackBtn').addEventListener('click', () => showScreen('l1'));
+async function makeLayer2() {
+  showScreen('l2loading');
+  const sel = allPubs().filter(p => selectedPubs.includes(p.id)).map(p => ({ name: p.name, meta: p.meta, custom: !!p.custom }));
+  try {
+    const r = await apiRetry('GENERATE_LAYER2', { run_id: RUN, selected_pubs: sel, background: '' });
+    buildL2(r.questions); showScreen('l2');
+  } catch (e) { failTo(e, 'pubs', makeLayer2); }
+}
+$('pubNextBtn').addEventListener('click', makeLayer2);
+
+// ── Layer 2 ─────────────────────────────────────────────────────────
+function buildL2(qs) {
+  L2Q = qs; l2Answers = {};
+  const box = $('l2Questions'); box.innerHTML = '';
+  qs.forEach((q, i) => {
+    const id = 'l2q' + (i + 1);
+    const block = document.createElement('div'); block.className = 'q-block';
+    const label = document.createElement('div'); label.className = 'q-label';
+    const num = document.createElement('span'); num.className = 'q-num'; num.textContent = 'L2 · Q' + (i + 1);
+    const tier = document.createElement('span'); tier.className = 'q-tier ' + q.tier.toLowerCase(); tier.textContent = q.tier === 'CRITICAL' ? 'Critical' : 'Important';
+    label.appendChild(num); label.appendChild(tier);
+    const text = document.createElement('div'); text.className = 'q-text'; text.textContent = q.text;
+    const ta = document.createElement('textarea'); ta.className = 'q-textarea'; ta.rows = 3; ta.placeholder = q.ph;
+    ta.addEventListener('input', () => { const v = ta.value.trim(); if (v) l2Answers[id] = v; else delete l2Answers[id]; updateL2Progress(); });
+    block.appendChild(label); block.appendChild(text); block.appendChild(ta); box.appendChild(block);
+  });
+}
+function updateL2Progress() {
+  const n = Object.keys(l2Answers).length;
+  $('l2hint').textContent = n + ' / 3 answered';
+  setProgress(50 + Math.round(n / 3 * 40), 'Layer 2 of 2 · ' + n + ' of 3 answered');
+}
+$('l2BackBtn').addEventListener('click', () => showScreen('pubs'));
+
+function inputRecordMd() {
+  const keys = Object.keys(l1Answers);
+  let md = `## 10. Input Record
+This record restates what you told the instrument, so a printed or saved copy of this brief carries its own context.
+
+`;
+  if (!keys.length) return md + 'No answers were recorded for this brief.';
+  L1.forEach(q => { if (l1Answers[q.id]) md += `#### ${q.label.replace(/^Q\d+ · /, '')}\n${l1Answers[q.id]}\n\n`; });
+  L2Q.forEach((q, i) => { const a = l2Answers['l2q' + (i + 1)]; if (a) md += `#### Custom Question ${i + 1}: ${q.text}\n${a}\n\n`; });
+  if (bgNote) md += `#### Background Material\n${bgNote}\n\n`;
+  md += `#### Publications Simulated\n${(storiesRun.map(s => s.pub).join(', '))}.`;
+  return md;
+}
+function wordCount(t) { return (t.trim().match(/\S+/g) || []).length; }
+let storiesRun = [];
+
+const GEN_PCT = { stories: 55, g1: 66, g2: 74, g3: 82, g4: 90, g5: 96 };
+async function generateBrief() {
+  showScreen('generating');
+  const background = $('l2Background').value.trim();
+  bgNote = background ? 'Supplied, about ' + wordCount(background) + ' words.' : '';
+  const answers = L2Q.map((q, i) => l2Answers['l2q' + (i + 1)] || '');
+  const sel = allPubs().filter(p => selectedPubs.includes(p.id));
+  const say = (t, pct) => { $('genStatus').textContent = t; setProgress(pct, 'Generating your brief…'); };
+  const back = 'l2';
+  try {
+    say('Simulating ' + sel.length + (sel.length === 1 ? ' reporter and writing the story…' : ' reporters and writing their stories…'), 52);
+    const results = await Promise.all(sel.map((p, i) => apiRetry('GENERATE_STORY', { run_id: RUN, pub_index: i, layer2_answers: answers, background })));
+    storiesRun = results.map(r => r.story);
+    const stories = storiesRun.map(s => ({ pub: s.pub, headline: s.headline, reporter: s.reporter, tone: s.tone, summary: s.summary, story: s.story, debrief: s.debrief }));
+    const parts = {};
+    const steps = [['g1', 'Ranking media channels and finding your newsworthy angles…'], ['g2', 'Finding the patterns across the stories and the gaps in your narrative…'], ['g3', 'Preparing the ten hardest questions and your answers…'], ['g4', 'Preparing your Key Messaging and danger questions…'], ['g5', 'Writing your summary and verdict…']];
+    for (const [g, label] of steps) {
+      say(label, GEN_PCT[g] - 8);
+      const r = await apiRetry('GENERATE_ANALYSIS', { run_id: RUN, group: g, stories, parts, background });
+      Object.assign(parts, r.parts);
+    }
+    say('Saving your brief…', 98);
+    const saved = await api('SAVE_BRIEF', { run_id: RUN, stories, parts });
+    if (saved.session) showBadge(saved.session);
+    keyMessage = null;
+    briefParts = assembleParts(parts, storiesRun);
+    renderBrief(); showScreen('output');
+  } catch (e) { failTo(e, back, generateBrief); }
+}
+function assembleParts(parts, stories) {
+  const out = [];
+  [1, 2, 3].forEach(n => { if (parts[n]) out.push(parts[n]); });
+  out.push({ heading: '## 4. Journalist Simulations', intro: 'Each story below is written by a fictional reporter in the style of the publication. No real reporter is imitated. Read each summary, then load the full story and its debrief.', stories });
+  [5, 6, 7, 8, 9].forEach(n => { if (parts[n]) out.push(parts[n]); });
+  out.push(inputRecordMd());
+  return out;
+}
+$('l2GenerateBtn').addEventListener('click', generateBrief);
+
+// ── Output ──────────────────────────────────────────────────────────
+function partMarkdown(p) {
+  if (typeof p === 'string') return p;
+  return p.heading + '\n' + p.intro + '\n\n' + p.stories.map(s =>
+    '### ' + s.pub + ' · Simulated Story by ' + s.reporter + '\n\n**' + s.headline + '**\n\n' + s.summary + '\n\n' + s.story + '\n\n**Intelligence Debrief**\n\n' + s.debrief).join('\n\n');
+}
+function storyRow(st) {
+  const words = wordCount(st.story);
+  const row = document.createElement('div'); row.className = 'story-row';
+  const head = document.createElement('div'); head.className = 'story-head';
+  const info = document.createElement('div'); info.className = 'story-info';
+  info.innerHTML = '<div class="story-pub"></div><div class="story-title"></div><div class="story-by"></div>';
+  info.querySelector('.story-pub').textContent = st.pub;
+  info.querySelector('.story-title').textContent = st.headline;
+  info.querySelector('.story-by').textContent = 'Simulated story by ' + st.reporter + ' · ' + st.tone + ' · About ' + words + ' words';
+  const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn-primary'; btn.textContent = 'Load Full Story';
+  head.appendChild(info); head.appendChild(btn);
+  const sum = document.createElement('p'); sum.className = 'story-summary'; sum.textContent = st.summary;
+  const full = document.createElement('div'); full.className = 'story-full';
+  full.innerHTML = '<div class="story-label">Filed Story at ' + st.pub + '</div>' + marked.parse(st.story) +
+    '<div class="story-label story-label-debrief">Intelligence Debrief at ' + st.pub + '</div>' + marked.parse(st.debrief);
+  const foot = document.createElement('div'); foot.className = 'story-foot';
+  const hideBtn = document.createElement('button'); hideBtn.type = 'button'; hideBtn.className = 'btn-primary'; hideBtn.textContent = 'Hide Full Story';
+  foot.appendChild(hideBtn); full.appendChild(foot);
+  const toggle = open => { full.classList.toggle('open', open); btn.textContent = open ? 'Hide Full Story' : 'Load Full Story'; };
+  btn.addEventListener('click', () => toggle(!full.classList.contains('open')));
+  hideBtn.addEventListener('click', () => { toggle(false); row.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  row.appendChild(head); row.appendChild(sum); row.appendChild(full);
+  return row;
+}
+function makeMessageCard(part) {
+  let firstDQ = true;
+  part.querySelectorAll('p').forEach(x => { const st = x.children.length === 1 && x.firstElementChild.tagName === 'STRONG' ? x.firstElementChild.textContent.trim() : ''; if (/^\d\. /.test(st)) { x.classList.add('danger-q'); if (firstDQ) { x.classList.add('first'); firstDQ = false; } } });
+  part.querySelectorAll('h3').forEach(x => { if (/^Question \d+$/.test(x.textContent.trim())) x.classList.add('q-head'); });
+  const h = [...part.querySelectorAll('h3')].find(x => x.textContent.trim() === 'Choose Your Key Message');
+  if (!h) return;
+  const options = [];
+  let n = h.nextElementSibling;
+  while (n && n.tagName !== 'H3') { const next = n.nextElementSibling; if (n.tagName === 'P') options.push(n.textContent.trim()); n.remove(); n = next; }
+  const card = document.createElement('div'); card.className = 'message-card';
+  h.parentNode.insertBefore(card, h);
+  const label = document.createElement('div'); label.className = 'message-label'; label.textContent = 'Three Key Messages To Consider'; card.appendChild(label);
+  h.remove();
+  const body = document.createElement('div'); card.appendChild(body);
+  const saved = keyMessage;
+  function showCommitted(msg) {
+    body.innerHTML = ''; label.textContent = 'Your Key Message';
+    const m = document.createElement('p'); m.className = 'message-text'; m.textContent = msg; body.appendChild(m);
+    const c = document.createElement('p'); c.className = 'key-cue'; c.textContent = 'Say it first. Say it last. Say it again in every answer.'; body.appendChild(c);
+    const b = document.createElement('button'); b.className = 'key-commit'; b.textContent = 'Choose A Different Message';
+    b.onclick = () => { showChoices(); }; body.appendChild(b);
+  }
+  function showChoices() {
+    body.innerHTML = ''; label.textContent = 'Three Key Messages To Consider';
+    const q = document.createElement('p'); q.className = 'key-prompt'; q.textContent = 'Choose one, then commit it to memory for (1) every summary statement, and (2) the response if you get rattled by a reporter. Shift all contexts to your Key Message.'; body.appendChild(q);
+    let chosen = null;
+    const commit = document.createElement('button'); commit.className = 'key-commit'; commit.textContent = 'Commit This Message'; commit.disabled = true;
+    options.forEach(t => {
+      const o = document.createElement('button'); o.className = 'key-option';
+      o.innerHTML = '<span class="key-dot"></span><span></span>'; o.lastChild.textContent = t;
+      o.onclick = () => { const ce = body.querySelector('.key-custom'); if (ce) ce.classList.remove('selected'); body.querySelectorAll('.key-option').forEach(x => x.classList.remove('selected')); o.classList.add('selected'); chosen = t; commit.disabled = false; };
+      body.appendChild(o);
+    });
+    const cl = document.createElement('p'); cl.className = 'key-custom-label'; cl.textContent = 'Or Write Your Own Key Message'; body.appendChild(cl);
+    const ci = document.createElement('textarea'); ci.className = 'key-custom'; ci.rows = 2; ci.placeholder = 'Type your own Key Message here';
+    ci.oninput = () => { body.querySelectorAll('.key-option').forEach(x => x.classList.remove('selected')); const v = ci.value.trim(); chosen = v || null; ci.classList.toggle('selected', !!v); commit.disabled = !v; };
+    body.appendChild(ci);
+    commit.onclick = () => { if (!chosen) return; keyMessage = chosen; showCommitted(chosen); if (RUN) api('SAVE_KEY_MESSAGE', { run_id: RUN, key_message: chosen }).catch(() => {}); };
+    body.appendChild(commit);
+  }
+  if (saved) showCommitted(saved); else showChoices();
+}
+function renderBrief() {
+  $('outputCompleteness').textContent = 'Layer 1: ' + Object.keys(l1Answers).length + '/12 · Layer 2: ' + Object.keys(l2Answers).length + '/' + L2Q.length;
+  const body = $('briefBody'); body.innerHTML = '';
+  briefParts.forEach((p, i) => {
+    const part = document.createElement('div'); part.className = 'brief-part';
+    if (typeof p === 'string') {
+      part.innerHTML = marked.parse(p);
+    } else {
+      part.innerHTML = marked.parse(p.heading) + '<p class="story-intro">' + p.intro + '</p>';
+      const list = document.createElement('div'); list.className = 'story-list';
+      p.stories.forEach(s => list.appendChild(storyRow(s)));
+      part.appendChild(list);
+    }
+    makeMessageCard(part);
+    const acts = document.createElement('div'); acts.className = 'box-actions';
+    const mk = t => { const b = document.createElement('button'); b.type = 'button'; b.className = 'nav-btn'; b.textContent = t; return b; };
+    const top = mk('Top Of Page'); top.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    const grp = document.createElement('div'); grp.className = 'grp';
+    const c = mk('Copy'); c.addEventListener('click', () => copyText(partMarkdown(p), c));
+    const pd = mk('Save As PDF'); pd.addEventListener('click', () => savePdf(part, 'Part_' + (i + 1)));
+    const nb = mk('New Brief'); nb.addEventListener('click', startNewBrief);
+    grp.appendChild(c); grp.appendChild(pd); grp.appendChild(nb);
+    acts.appendChild(top); acts.appendChild(grp); part.appendChild(acts);
+    body.appendChild(part);
+  });
+}
+function copyText(t, btn) {
+  navigator.clipboard.writeText(t).then(() => { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = o; }, 2000); });
+}
+$('btnCopyAll').addEventListener('click', function () { copyText(briefParts.map(partMarkdown).join('\n\n---\n\n'), this); });
+$('btnPdfAll').addEventListener('click', () => savePdf($('briefBody'), 'Entire_Brief'));
+function startNewBrief() {
+  if (!confirm('Start a new brief? Your current brief will be cleared.')) return;
+  l1Answers = {}; selectedPubs = []; customPubs = []; PUBS = []; L2Q = []; l2Answers = {}; briefParts = []; storiesRun = []; RUN = null; keyMessage = null; bgNote = '';
+  $('l2Background').value = '';
+  buildL1(); buildPubs(); $('pubHint').textContent = '0 / 3 selected'; $('pubNextBtn').disabled = true;
+  $('followupThread').innerHTML = ''; $('briefBody').innerHTML = '';
+  showScreen('l1');
+}
+$('btnNewBrief').addEventListener('click', startNewBrief);
+$('btnNewBriefAll').addEventListener('click', startNewBrief);
+
+// ── Follow-up ───────────────────────────────────────────────────────
+$('followupBtn').addEventListener('click', async function () {
+  const input = $('followupInput'); const q = input.value.trim(); if (!q || !RUN) return;
+  const thread = $('followupThread');
+  const u = document.createElement('div'); u.className = 'thread-entry user'; u.textContent = q; thread.appendChild(u);
+  const m = document.createElement('div'); m.className = 'thread-entry machine'; m.textContent = 'Thinking…'; thread.appendChild(m);
+  input.value = ''; this.disabled = true;
+  try { const r = await api('FOLLOW_UP', { run_id: RUN, question: q }); m.textContent = r.answer; }
+  catch (e) { m.textContent = e.code === 'trial_exhausted' || e.code === 'followup_window_closed' ? errText('followup_window_closed') : errText(e.code); }
+  this.disabled = false;
+});
+$('followupInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('followupBtn').click(); });
+
+// ── Previous briefs ─────────────────────────────────────────────────
+$('btnHistory').addEventListener('click', async () => {
+  const list = $('histList'); list.innerHTML = '<p class="hist-meta">Loading your briefs…</p>';
+  showScreen('history');
+  try {
+    const r = await api('LIST_BRIEFS');
+    list.innerHTML = '';
+    if (!r.briefs.length) { list.innerHTML = '<p class="hist-meta">You have no saved briefs yet.</p>'; return; }
+    r.briefs.forEach(b => {
+      const row = document.createElement('div'); row.className = 'hist-item';
+      row.innerHTML = '<div><div class="hist-title"></div><div class="hist-meta"></div></div><button class="btn-action">Open</button>';
+      row.querySelector('.hist-title').textContent = b.title || 'Launch Readiness Brief';
+      row.querySelector('.hist-meta').textContent = new Date(b.created_at).toLocaleDateString('en-CA') + ' · ' + (b.publications || []).join(', ');
+      row.querySelector('button').addEventListener('click', () => openBrief(b.run_id));
+      list.appendChild(row);
+    });
+  } catch (e) { list.innerHTML = ''; failTo(e, 'l1', null); }
+});
+async function openBrief(runId) {
+  showScreen('generating'); $('genStatus').textContent = 'Opening your brief…'; setProgress(60, 'Opening your brief…');
+  try {
+    const r = await api('GET_BRIEF', { run_id: runId });
+    RUN = r.run_id; l1Answers = r.layer1 || {}; keyMessage = r.key_message || null;
+    L2Q = (r.layer2 || []).map(q => ({ tier: q.tier, text: q.text, ph: q.placeholder || '' }));
+    l2Answers = {}; (r.layer2 || []).forEach((q, i) => { if (q.answer) l2Answers['l2q' + (i + 1)] = q.answer; });
+    bgNote = r.background ? 'Supplied.' : '';
+    storiesRun = r.stories || [];
+    briefParts = assembleParts(r.parts || {}, storiesRun);
+    $('followupThread').innerHTML = '';
+    renderBrief(); showScreen('output');
+  } catch (e) { failTo(e, 'l1', null); }
+}
+$('histBackBtn').addEventListener('click', () => showScreen(briefParts.length ? 'output' : 'l1'));
+$('errBackBtn').addEventListener('click', () => showScreen(errBack));
+$('errRetryBtn').addEventListener('click', () => { if (errRetry) errRetry(); });
+$('accessBtn').addEventListener('click', () => { window.location.href = 'https://quvivant.com/'; });
+$('btnSuiteBottom').addEventListener('click', () => { window.location.href = 'https://quvivant.com/'; });
+$('btnNewBriefBottom').addEventListener('click', () => startNewBrief());
+$('btnBack').addEventListener('click', () => { window.location.href = 'https://quvivant.com/'; });
+
+// ── PDF export ──────────────────────────────────────────────────────
+// The printable copy is mounted on the page (visible to the capture, hidden from the user) before it is saved.
+const PRINT_ACCENT = '#5b3fb0';
+function savePdf(srcEl, name) {
+  const dateStr = new Date().toLocaleDateString('en-CA');
+  const wrap = document.createElement('div');
+  wrap.style.cssText = "width:680px;font-family:'Crimson Pro',Georgia,serif;color:#111;background:#fff;padding:0;box-sizing:border-box;";
+  const inner = document.createElement('div'); inner.innerHTML = srcEl.innerHTML;
+  inner.querySelectorAll('.box-actions, .story-head .btn-primary, .story-foot, .story-summary').forEach(n => n.remove());
+  inner.querySelectorAll('.story-full').forEach(n => { n.style.display = 'block'; n.style.border = 'none'; n.style.margin = '0'; n.style.padding = '0'; });
+  inner.querySelectorAll('.story-list').forEach(n => { n.style.background = '#fff'; n.style.border = 'none'; n.style.margin = '0'; });
+  inner.querySelectorAll('.story-row').forEach(n => { n.style.background = '#fff'; n.style.border = 'none'; n.style.padding = '0'; n.style.margin = '0 0 22px'; });
+  inner.querySelectorAll('.story-head').forEach(n => { n.style.display = 'block'; });
+  inner.querySelectorAll('.story-pub, .story-by').forEach(n => { n.style.color = PRINT_ACCENT; n.style.fontFamily = 'Arial,sans-serif'; n.style.fontSize = '11px'; });
+  inner.querySelectorAll('.story-title, .story-label').forEach(n => { n.style.color = '#111'; n.style.fontSize = '17px'; n.style.fontWeight = '600'; n.style.margin = '6px 0 10px'; });
+  inner.querySelectorAll('.message-card').forEach(n => { n.style.background = '#f6f3ff'; n.style.border = '1px solid #ccc'; n.style.padding = '14px 18px 4px'; });
+  inner.querySelectorAll('.message-label').forEach(n => { n.style.color = PRINT_ACCENT; n.style.fontFamily = 'Arial,sans-serif'; n.style.fontSize = '12px'; });
+  inner.querySelectorAll('.message-text').forEach(n => { n.style.color = '#111'; n.style.fontSize = '20px'; n.style.fontWeight = '600'; });
+  inner.querySelectorAll('.brief-part').forEach(n => { n.style.border = 'none'; n.style.margin = '0 0 18px'; n.style.padding = '0'; });
+  inner.querySelectorAll('h2, h3, h4').forEach(h => { h.style.color = PRINT_ACCENT; h.style.fontFamily = 'Arial,sans-serif'; h.style.fontSize = '14px'; h.style.fontWeight = '600'; h.style.borderBottom = '1px solid #ccc'; h.style.paddingBottom = '6px'; h.style.margin = '22px 0 10px'; });
+  inner.querySelectorAll('p, li').forEach(e => { e.style.color = '#111'; e.style.fontSize = '15px'; e.style.lineHeight = '1.7'; e.style.margin = '0 0 10px'; });
+  inner.querySelectorAll('strong').forEach(e => { e.style.color = '#000'; });
+  inner.querySelectorAll('em').forEach(e => { e.style.color = '#333'; });
+  const head = document.createElement('div');
+  head.innerHTML = '<div style="border-bottom:2px solid ' + PRINT_ACCENT + ';padding-bottom:16px;margin-bottom:24px;">' +
+    '<div style="font-family:Arial,sans-serif;font-size:12px;letter-spacing:1px;color:' + PRINT_ACCENT + ';margin-bottom:6px;">QuVivant Business Clarity · Media Launch Readiness</div>' +
+    '<div style="font-family:Arial,sans-serif;font-size:22px;font-weight:600;color:#111;">Launch Readiness Brief</div>' +
+    '<div style="font-family:Arial,sans-serif;font-size:11px;color:#666;margin-top:8px;">' + dateStr + '</div></div>';
+  const foot = document.createElement('div');
+  foot.style.cssText = 'border-top:1px solid #ccc;margin-top:32px;padding-top:12px;font-family:Arial,sans-serif;font-size:10px;color:#777;';
+  foot.textContent = 'Generated by QuVivant Business Clarity · quvivant.com · ' + dateStr;
+  wrap.appendChild(head); wrap.appendChild(inner); wrap.appendChild(foot);
+  // The printable copy is shown briefly on a white sheet at the top of the page while it is captured, then removed.
+  const prevScroll = window.scrollY;
+  const sheet = document.createElement('div');
+  sheet.style.cssText = 'position:absolute;top:0;left:0;width:100%;min-height:100%;background:#fff;z-index:99999;padding:24px 0;';
+  const label = document.createElement('div');
+  label.style.cssText = 'font-family:Arial,sans-serif;font-size:14px;color:#555;text-align:center;margin-bottom:16px;';
+  label.textContent = 'Preparing Your PDF…';
+  wrap.style.margin = '0 auto';
+  sheet.appendChild(label); sheet.appendChild(wrap); document.body.appendChild(sheet);
+  window.scrollTo(0, 0);
+  const done = () => { if (sheet.parentNode) sheet.parentNode.removeChild(sheet); window.scrollTo(0, prevScroll); };
+  html2pdf().set({ margin: [15, 15, 15, 15], filename: 'QuVivant_Business_Clarity_Media_Launch_Readiness_' + name + '_' + dateStr + '.pdf', image: { type: 'jpeg', quality: 0.85 }, html2canvas: { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, pagebreak: { mode: ['css', 'legacy'] } }).from(wrap).save().then(done).catch(done);
+}
+
+buildL1(); buildPubs();
+if (!TOKEN) { showScreen('access'); } else { showScreen('l1'); peekBadge(); }
+</script>
+</body>
+</html>
